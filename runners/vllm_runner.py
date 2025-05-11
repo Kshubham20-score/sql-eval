@@ -15,7 +15,6 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 from utils.reporting import upload_results
 
-
 def run_vllm_eval(args):
     # get params from args
     questions_file_list = args.questions_file
@@ -28,9 +27,10 @@ def run_vllm_eval(args):
     k_shot = args.k_shot
     db_type = args.db_type
     cot_table_alias = args.cot_table_alias
-    enable_lora = True if args.adapter else False
-    lora_request = LoRARequest("sql_adapter", 1, args.adapter) if args.adapter else None
-
+    #enable_lora = True if args.adapter else False
+    #lora_request = LoRARequest("sql_adapter", 1, args.adapter) if args.adapter else None
+    enable_lora = False
+    lora_request = None
     # initialize model only once as it takes a while
     print(f"Preparing {model_name}")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -39,24 +39,24 @@ def run_vllm_eval(args):
         llm = LLM(
             model=model_name,
             tensor_parallel_size=1,
-            enable_lora=enable_lora,
+            #enable_lora=enable_lora,
             max_model_len=4096,
-            max_lora_rank=64,
+            #max_lora_rank=64,
         )
     else:
         llm = LLM(
             model=model_name,
             tensor_parallel_size=1,
-            quantization="AWQ",
-            enable_lora=enable_lora,
+            #quantization="AWQ",
+            #enable_lora=enable_lora,
             max_model_len=4096,
-            max_lora_rank=64,
+            #max_lora_rank=64,
         )
 
     sampling_params = SamplingParams(
         n=1,
-        best_of=num_beams,
-        use_beam_search=num_beams != 1,
+        #best_of=num_beams,
+        #use_beam_search=num_beams != 1,
         stop_token_ids=[tokenizer.eos_token_id],
         max_tokens=1000,
         temperature=0,
@@ -138,8 +138,9 @@ def run_vllm_eval(args):
             start_time = time.time()
             # outputs = llm.generate(prompts, sampling_params) # if you prefer to use prompts instead of token_ids
             outputs = llm.generate(
+                prompts=prompts,
                 sampling_params=sampling_params,
-                prompt_token_ids=prompt_tokens,
+                #prompt_token_ids=prompt_tokens,
                 use_tqdm=False,
                 lora_request=lora_request,
             )
