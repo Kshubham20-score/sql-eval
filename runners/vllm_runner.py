@@ -125,18 +125,18 @@ def run_vllm_eval(args):
         for batch in (pbar := tqdm(df_chunks, total=len(df))):
             prompts = batch["prompt"].tolist()
             print(f"Generating completions for {len(prompts)} prompts")
-            prompt_tokens = []
-            prompt_token_sizes = []
-            for prompt in prompts:
-                token_ids = tokenizer.encode(prompt, add_special_tokens=False)
-                # add bos token if not already present in prompt
-                if token_ids[0] != tokenizer.bos_token_id:
-                    token_ids = [tokenizer.bos_token_id] + token_ids
-                prompt_tokens.append(token_ids)
-                prompt_token_sizes.append(len(token_ids))
-            print(
-                f"Average prompt size: {sum(prompt_token_sizes)/len(prompt_token_sizes):.0f}"
-            )
+            # prompt_tokens = []
+            # prompt_token_sizes = []
+            # for prompt in prompts:
+            #     token_ids = tokenizer.encode(prompt, add_special_tokens=False)
+            #     # add bos token if not already present in prompt
+            #     if token_ids[0] != tokenizer.bos_token_id:
+            #         token_ids = [tokenizer.bos_token_id] + token_ids
+            #     prompt_tokens.append(token_ids)
+            #     prompt_token_sizes.append(len(token_ids))
+            # print(
+            #     f"Average prompt size: {sum(prompt_token_sizes)/len(prompt_token_sizes):.0f}"
+            # )
             start_time = time.time()
             outputs = llm.generate(prompts, sampling_params) # if you prefer to use prompts instead of token_ids
             # outputs = llm.generate(
