@@ -3,14 +3,14 @@ import os
 from typing import List
 import sqlparse
 from vllm import LLM, SamplingParams
-from vllm.lora.request import LoRARequest
+# from vllm.lora.request import LoRARequest
 from eval.eval import compare_query_results
 import pandas as pd
 from utils.gen_prompt import generate_prompt
 from utils.questions import prepare_questions_df
 from utils.creds import db_creds_all
 import time
-import torch
+# import torch
 from transformers import AutoTokenizer
 from tqdm import tqdm
 from utils.reporting import upload_results
@@ -136,14 +136,14 @@ def run_vllm_eval(args):
                 f"Average prompt size: {sum(prompt_token_sizes)/len(prompt_token_sizes):.0f}"
             )
             start_time = time.time()
-            # outputs = llm.generate(prompts, sampling_params) # if you prefer to use prompts instead of token_ids
-            outputs = llm.generate(
-                prompts=prompts,
-                sampling_params=sampling_params,
-                #prompt_token_ids=prompt_tokens,
-                use_tqdm=False,
-                lora_request=lora_request,
-            )
+            outputs = llm.generate(prompts, sampling_params) # if you prefer to use prompts instead of token_ids
+            # outputs = llm.generate(
+            #     prompts=prompts,
+            #     sampling_params=sampling_params,
+            #     #prompt_token_ids=prompt_tokens,
+            #     use_tqdm=False,
+            #     lora_request=lora_request,
+            # )
             print(
                 f"Generated {len(outputs)} completions in {time.time() - start_time:.2f} seconds"
             )
