@@ -29,29 +29,31 @@ def run_vllm_eval(args):
     cot_table_alias = args.cot_table_alias
     #enable_lora = True if args.adapter else False
     #lora_request = LoRARequest("sql_adapter", 1, args.adapter) if args.adapter else None
-    enable_lora = False
-    lora_request = None
+    # enable_lora = False
+    # lora_request = None
     # initialize model only once as it takes a while
     print(f"Preparing {model_name}")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.pad_token_id = tokenizer.eos_token_id
-    if not args.quantized:
-        llm = LLM(
-            model=model_name,
-            tensor_parallel_size=1,
-            #enable_lora=enable_lora,
-            max_model_len=4096,
-            #max_lora_rank=64,
-        )
-    else:
-        llm = LLM(
-            model=model_name,
-            tensor_parallel_size=1,
-            #quantization="AWQ",
-            #enable_lora=enable_lora,
-            max_model_len=4096,
-            #max_lora_rank=64,
-        )
+    # if not args.quantized:
+    llm = LLM(
+        model=model_name,
+        # tensor_parallel_size=1,
+        #enable_lora=enable_lora,
+        device="cpu",
+        max_model_len=4096,
+        trust_remote_code=True,
+        #max_lora_rank=64,
+    )
+    # else:
+    #     llm = LLM(
+    #         model=model_name,
+    #         tensor_parallel_size=1,
+    #         #quantization="AWQ",
+    #         #enable_lora=enable_lora,
+    #         max_model_len=4096,
+    #         #max_lora_rank=64,
+    #     )
 
     sampling_params = SamplingParams(
         n=1,
