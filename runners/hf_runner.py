@@ -13,13 +13,12 @@ from utils.gen_prompt import generate_prompt
 from utils.questions import prepare_questions_df
 from utils.creds import db_creds_all
 from tqdm import tqdm
-from psycopg2.extensions import QueryCanceledError
+#from psycopg2.extensions import QueryCanceledError
 from time import time
 import gc
 from utils.reporting import upload_results
 
 device_map = "mps" if torch.backends.mps.is_available() else "auto"
-
 
 def get_tokenizer_model(model_name: Optional[str], adapter_path: Optional[str]):
     """
@@ -85,9 +84,9 @@ def run_hf_eval(args):
     # initialize tokenizer and model
     tokenizer, model = get_tokenizer_model(model_name, adapter_path)
 
-    if "8b" in model_name.lower():
+    #if "8b" in model_name.lower():
         # do this since it doesn't seem to have been done by default
-        tokenizer.padding_side = "left"
+    tokenizer.padding_side = "left"
 
     tokenizer.pad_token_id = tokenizer.eos_token_id
     model.tie_weights()
@@ -137,7 +136,7 @@ def run_hf_eval(args):
             ),
             axis=1,
         )
-
+        #print(df["prompt"][0])
         total_tried = 0
         total_correct = 0
         output_rows = []
@@ -165,9 +164,9 @@ def run_hf_eval(args):
                     top_p=None,
                 )
                 gc.collect()
-                torch.cuda.empty_cache()
-                torch.cuda.synchronize()
-
+#                if torch.cuda.is_available():
+#                           torch.cuda.empty_cache()
+#                   torch.cuda.synchronize()
                 for row, result in zip(batch.to_dict("records"), generated_queries):
                     total_tried += 1
                     # we set return_full_text to False so that we don't get the prompt text in the generated text
@@ -191,9 +190,9 @@ def run_hf_eval(args):
                         )
 
                     gc.collect()
-                    if torch.cuda.is_available():
-                        torch.cuda.empty_cache()
-                        torch.cuda.synchronize()
+#                    if torch.cuda.is_available():
+#                       torch.cuda.empty_cache()
+#                       torch.cuda.synchronize()
 
                     row["generated_query"] = generated_query
                     row["latency_seconds"] = None
@@ -223,9 +222,9 @@ def run_hf_eval(args):
                         row["error_msg"] = ""
                         if correct:
                             total_correct += 1
-                    except QueryCanceledError as e:
-                        row["timeout"] = 1
-                        row["error_msg"] = f"QUERY EXECUTION TIMEOUT: {e}"
+                   # except QueryCanceledError as e:
+                    #    row["timeout"] = 1
+                     #   row["error_msg"] = f"QUERY EXECUTION TIMEOUT: {e}"
                     except Exception as e:
                         row["error_db_exec"] = 1
                         row["error_msg"] = f"QUERY EXECUTION ERROR: {e}"
