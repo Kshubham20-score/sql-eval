@@ -198,7 +198,7 @@ def run_vllm_eval(args):
             )
         df = pd.DataFrame(output_rows)
         del df["prompt"]
-        print(df.groupby("query_category")[["exact_match", "correct"]].mean())
+        print(df.groupby("query_category")[["correct","error_db_exec"]].mean())
         df = df.sort_values(by=["db_name", "query_category", "question"])
         print(f"Average tokens generated: {df['tokens_used'].mean():.1f}")
         # get directory of output_file and create if not exist
