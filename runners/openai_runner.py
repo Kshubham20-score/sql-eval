@@ -78,7 +78,7 @@ def generate_prompt(
             k_shot_prompt=k_shot_prompt,
         )
     else:
-        prompt[0]["content"] = prompt[1]["content"].format(
+        prompt[0]["content"] = prompt[0]["content"].format(
             db_type=db_type,
             user_question=question,
             instructions=instructions,
@@ -245,11 +245,11 @@ def run_openai_eval(args):
         avg_subset = output_df["correct"].sum() / len(output_df)
         print(f"Average correct rate: {avg_subset:.2f}")
 
-        results = output_df.to_dict("records")
-        with open(
-            f"./eval-visualizer/public/{output_file.split('/')[-1].replace('.csv', '.json')}",
-            "w",
-        ) as f:
-            json.dump(results, f)
+        #results = output_df.to_dict("records")
+        #with open(
+        #    f"./eval-visualizer/public/{output_file.split('/')[-1].replace('.csv', '.json')}",
+        #    "w",
+        #) as f:
+        #    json.dump(results, f)
 
         print("Total cost of evaluation (in cents): ", output_df["cost_in_cents"].sum())

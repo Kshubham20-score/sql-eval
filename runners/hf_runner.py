@@ -20,6 +20,24 @@ from utils.reporting import upload_results
 
 device_map = "mps" if torch.backends.mps.is_available() else "auto"
 
+import logging 
+from  datetime import datetime
+
+os.makedirs("logs",exist_ok=True)
+LOG_PATH= os.path.join("logs",f"{args.model.replace('/','_')}.log") if args.model else "logs/model.log"
+
+logging.basicConfig(
+     filename=LOG_PATH,
+     level = logging.INFO,
+     format = "%(asctime)s - %(levelname)s - %(message)s" 
+)
+
+def log_interaction(prompt,response, filtered_response, golden_query, correct, exact_match, error_msg, correct_sofar):
+    log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nEXACT_MATCH: {exact_match}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
+    log_entry += "\n" + '-' * 100
+    logging.info(log_entry)  
+
+
 def get_tokenizer_model(model_name: Optional[str], adapter_path: Optional[str]):
     """
     Load a HuggingFace tokenizer and model.
@@ -44,12 +62,12 @@ def get_tokenizer_model(model_name: Optional[str], adapter_path: Optional[str]):
         print(f"Merged adapter {adapter_path}")
     else:
         print(f"Loading model {model_name}")
-        try:
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-        except:
-            tokenizer = AutoTokenizer.from_pretrained(
-                "meta-llama/Meta-Llama-3-8B-Instruct"
-            )
+        #try:
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        #except:
+        #    tokenizer = AutoTokenizer.from_pretrained(
+        #        "meta-llama/Meta-Llama-3-8B-Instruct"
+        #    )
 
         tokenizer.pad_token_id = tokenizer.eos_token_id
         model = AutoModelForCausalLM.from_pretrained(
@@ -234,6 +252,17 @@ def run_hf_eval(args):
                     pbar.set_description(
                         f"Correct so far: {total_correct}/{total_tried} ({100*total_correct/total_tried:.2f}%)"
                     )
+
+                    log_interaction(
+                        prompt=row["prompt"],
+			response=result[0]["generated_text"],
+                        filtered_response=generated_query,
+                        golden_query=row["query"],
+                        correct= row["correct"],
+                        exact_match=row["exact_match"],
+                        error_msg=row["error_msg"]
+                        correct_sofar= 100*total_correct/total_tried
+                       )
 
         output_df = pd.DataFrame(output_rows)
         del output_df["prompt"]
