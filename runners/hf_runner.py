@@ -23,14 +23,6 @@ device_map = "mps" if torch.backends.mps.is_available() else "auto"
 import logging 
 from  datetime import datetime
 
-os.makedirs("logs",exist_ok=True)
-LOG_PATH= os.path.join("logs",f"{args.model.replace('/','_')}.log") if args.model else "logs/model.log"
-
-logging.basicConfig(
-     filename=LOG_PATH,
-     level = logging.INFO,
-     format = "%(asctime)s - %(levelname)s - %(message)s" 
-)
 
 def log_interaction(prompt,response, filtered_response, golden_query, correct, exact_match, error_msg, correct_sofar):
     log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nEXACT_MATCH: {exact_match}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
@@ -80,6 +72,15 @@ def get_tokenizer_model(model_name: Optional[str], adapter_path: Optional[str]):
 
 
 def run_hf_eval(args):
+    #creating log
+    os.makedirs("logs",exist_ok=True) 
+    LOG_PATH= os.path.join("logs",f"{args.model.replace('/','_')}.log") if args.model else "logs/model.log"
+
+    logging.basicConfig(
+      filename=LOG_PATH,
+      level = logging.INFO,
+      format = "%(asctime)s - %(levelname)s - %(message)s" 
+    )
     # get params from args
     questions_file_list = args.questions_file
     prompt_file_list = args.prompt_file
@@ -260,8 +261,8 @@ def run_hf_eval(args):
                         golden_query=row["query"],
                         correct= row["correct"],
                         exact_match=row["exact_match"],
-                        error_msg=row["error_msg"]
-                        correct_sofar= 100*total_correct/total_tried
+                        error_msg=row["error_msg"],
+                        correct_sofar= f"Correct so far: {total_correct}/{total_tried} ({100*total_correct/total_tried:.2f}%)"
                        )
 
         output_df = pd.DataFrame(output_rows)
