@@ -15,7 +15,25 @@ from transformers import AutoTokenizer
 from tqdm import tqdm
 from utils.reporting import upload_results
 
+import logging 
+from  datetime import datetime
+
+def log_interaction(prompt,response, filtered_response, golden_query, correct, exact_match, error_msg, correct_sofar):
+    log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nEXACT_MATCH: {exact_match}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
+    log_entry += "\n" + '-' * 100
+    logging.info(log_entry) 
+
 def run_vllm_eval(args):
+    #creating log
+    os.makedirs("logs",exist_ok=True) 
+    LOG_PATH= os.path.join("logs",f"{args.model.replace('/','_')}.log") if args.model else "logs/model.log"
+
+    logging.basicConfig(
+      filename=LOG_PATH,
+      level = logging.INFO,
+      format = "%(asctime)s - %(levelname)s - %(message)s" 
+    )
+
     # get params from args
     questions_file_list = args.questions_file
     prompt_file_list = args.prompt_file
@@ -192,6 +210,19 @@ def run_vllm_eval(args):
 
                 total_tried += 1
                 output_rows.append(row)
+                
+                log_interaction(
+                        prompt=row["prompt"],
+			response=output.outputs[0].text,
+                        filtered_response=generated_query,
+                        golden_query=row["query"],
+                        correct= row["correct"],
+                        exact_match=row["exact_match"],
+                        error_msg=row["error_msg"],
+                        correct_sofar= f"Correct so far: {total_correct}/{total_tried} ({100*total_correct/total_tried:.2f}%)"
+                       )    
+    
+
             pbar.update(len(batch))
             pbar.set_description(
                 f"Correct so far: {total_correct}/{(total_tried)} ({100*total_correct/(total_tried):.2f}%)"
