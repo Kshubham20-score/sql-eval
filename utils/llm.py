@@ -128,6 +128,7 @@ def chat_openai(
     store=True,
     metadata=None,
     timeout=100,
+    base_url: str=None,
 ) -> LLMResponse:
     """
     Returns the response from the OpenAI API, the time taken to generate the response, the number of input tokens used, and the number of output tokens used.
@@ -135,7 +136,10 @@ def chat_openai(
     """
     from openai import OpenAI
 
-    client_openai = OpenAI()
+    if base_url:
+        client_openai = OpenAI(base_url=base_url)
+    else:
+        client_openai = OpenAI()
     t = time.time()
     if model.startswith("o"):
         if messages[0].get("role") == "system":

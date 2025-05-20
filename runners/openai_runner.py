@@ -15,6 +15,14 @@ from utils.questions import prepare_questions_df
 from utils.reporting import upload_results
 from utils.llm import chat_openai
 
+import logging 
+from  datetime import datetime
+
+
+def log_interaction(prompt,response, filtered_response, golden_query, correct, exact_match, error_msg, correct_sofar):
+    log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nEXACT_MATCH: {exact_match}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
+    log_entry += "\n" + '-' * 100
+    logging.info(log_entry)  
 
 def generate_prompt(
     prompt_file,
@@ -103,7 +111,7 @@ def process_row(row, model_name, args):
         shuffle=args.shuffle_metadata,
     )
     try:
-        response = chat_openai(messages=messages, model=model_name, temperature=0.0)
+        response = chat_openai(messages=messages, model=model_name, temperature=0.0, base_url="https://node4-api.staging.scorelabsai.com")
         generated_query = (
             response.content.split("```sql", 1)[-1].split("```", 1)[0].strip()
         )
@@ -218,6 +226,16 @@ def run_openai_eval(args):
                 pbar.set_description(
                     f"Accuracy: {round(total_correct/total_tried * 100, 2)}% ({total_correct}/{total_tried})"
                 )
+                log_interaction(
+                        prompt=row["prompt"],
+			            response="",
+                        filtered_response=row["generated_query"],
+                        golden_query=row["query"],
+                        correct= row["correct"],
+                        exact_match=int(exact_match),
+                        error_msg=row["error_msg"],
+                        correct_sofar= f"Correct so far: {total_correct}/{total_tried} ({100*total_correct/total_tried:.2f}%)"
+                       )
 
         # save results to csv
         output_df = pd.DataFrame(output_rows)
