@@ -256,7 +256,7 @@ def run_hf_eval(args):
 
                     log_interaction(
                         prompt=row["prompt"],
-			response=result[0]["generated_text"],
+			            response=result[0]["generated_text"],
                         filtered_response=generated_query,
                         golden_query=row["query"],
                         correct= row["correct"],
