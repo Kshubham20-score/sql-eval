@@ -141,6 +141,15 @@ def process_row(row, model_name, args):
 
 
 def run_openai_eval(args):
+    #creating log
+    os.makedirs("logs",exist_ok=True) 
+    LOG_PATH= os.path.join("logs",f"{args.model.replace('/','_')}.log") if args.model else "logs/model.log"
+
+    logging.basicConfig(
+      filename=LOG_PATH,
+      level = logging.INFO,
+      format = "%(asctime)s - %(levelname)s - %(message)s" 
+    )
     # get params from args
     questions_file_list = args.questions_file
     prompt_file_list = args.prompt_file
