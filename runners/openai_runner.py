@@ -111,7 +111,7 @@ def process_row(row, model_name, args):
         shuffle=args.shuffle_metadata,
     )
     try:
-        response = chat_openai(messages=messages, model=model_name, temperature=0.0, base_url="https://node4-api.staging.scorelabsai.com")
+        response = chat_openai(messages=messages, model=model_name, temperature=0.0, base_url="https://node4-api.staging.scorelabsai.com/v1")
         generated_query = (
             response.content.split("```sql", 1)[-1].split("```", 1)[0].strip()
         )
