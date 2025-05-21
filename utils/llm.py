@@ -174,12 +174,12 @@ def chat_openai(
             response = client_openai.chat.completions.create(
                 messages=messages,
                 model=model,
-                max_completion_tokens=max_completion_tokens,
+                max_tokens=max_completion_tokens,
                 temperature=temperature,
                 stop=stop,
-                seed=seed,
-                store=store,
-                metadata=metadata,
+                #seed=seed,
+                #store=store,
+                #metadata=metadata,
             )
 
     if response_format and not model.startswith("o1"):
