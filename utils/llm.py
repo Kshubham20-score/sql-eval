@@ -119,8 +119,8 @@ def chat_anthropic(
 def chat_openai(
     messages: List[Dict[str, str]],
     model: str = "gpt-4o",
-    max_completion_tokens: int = 16384,
-    temperature: float = 0.0,
+    max_completion_tokens: int = 600,
+    temperature: float = 0.1,
     stop: List[str] = [],
     json_mode: bool = False,
     response_format=None,
@@ -137,7 +137,7 @@ def chat_openai(
     from openai import OpenAI
 
     if base_url:
-        client_openai = OpenAI(base_url=base_url)
+        client_openai = OpenAI(base_url=base_url, api_key="EMPTY")
     else:
         client_openai = OpenAI()
     t = time.time()
@@ -174,12 +174,12 @@ def chat_openai(
             response = client_openai.chat.completions.create(
                 messages=messages,
                 model=model,
-                max_tokens=max_completion_tokens,
+                max_completion_tokens=max_completion_tokens,
                 temperature=temperature,
                 stop=stop,
-                #seed=seed,
-                #store=store,
-                #metadata=metadata,
+                seed=seed,
+                store=store,
+                metadata=metadata,
             )
 
     if response_format and not model.startswith("o1"):

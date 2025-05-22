@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-client_openai = OpenAI(base_url="https://node4-api.staging.scorelabsai.com/v1", api_key="test")
+client_openai = OpenAI(base_url="https://node4-api.staging.scorelabsai.com/v1", api_key="EMPTY")
 
 messages= [
   {
@@ -9,7 +9,7 @@ messages= [
   },
   {
     "role": "user",
-    "content": "Generate a SQL query that answers the question. This query will run on a database whose schema is represented in this stringReturn only the SQL query, and nothing else."
+    "content": "Generate a SQL query that answers the question .\n\nThis query will run on a database whose schema is"
   }
 ]
 
@@ -17,12 +17,12 @@ messages= [
 response = client_openai.chat.completions.create(
                 messages=messages,
                 model="defog/llama-3-sqlcoder-8b",
-                max_completion_tokens=100,
+                max_tokens=100,
                 temperature=0.1,
-                #stop=[],
-                #seed=0,
-                #store=True,
-                #metadata=None,
+                stop=[],
+                # seed=0,
+                # store=True,
+                # metadata=None,
             )
 
 print( response.choices[0].message.content)
