@@ -1,0 +1,1771 @@
+2025-05-22 12:10:35,155 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,157 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,161 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,162 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,164 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,165 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,169 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,170 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,171 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,172 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,314 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,315 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/6 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,351 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,352 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/7 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,380 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,381 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/8 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,446 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,449 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,450 - INFO - PROMPT: What are the top 3 publications with the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {publication.title, publication.pid}, publication.citation_num FROM publication ORDER BY publication.citation_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/9 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,451 - INFO - PROMPT: What is the ratio of publications to authors in the database?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT author.aid), 0) AS publication_to_author_ratio FROM publication, author;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/10 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,474 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,475 - INFO - PROMPT: What is the ratio of publications presented in conferences to publications published in journals?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT CASE WHEN cid IS NOT NULL THEN pid END) AS FLOAT) / NULLIF(COUNT(DISTINCT CASE WHEN jid IS NOT NULL THEN pid END), 0) AS ratio FROM publication;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/11 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,498 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,499 - INFO - PROMPT: What is the ratio of the total number of publications to the total number of keywords within each domain ID? Show all domain IDs.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_publication LEFT JOIN domain_keyword ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_keyword LEFT JOIN domain_publication ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT d.did, COALESCE(CAST(COUNT(DISTINCT dp.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT dk.kid), 0), 0) AS publication_to_keyword_ratio FROM domain d LEFT JOIN domain_publication dp ON d.did = dp.did LEFT JOIN domain_keyword dk ON d.did = dk.did GROUP BY d.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/12 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,583 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,584 - INFO - PROMPT: What are the titles of all publications ordered alphabetically?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT publication.title FROM publication ORDER BY publication.title ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/13 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,605 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,606 - INFO - PROMPT: How does the ratio of publications to journals change over the years? Return the annual numbers of publications and journals as well.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS num_publications, COUNT(DISTINCT publication.jid) AS num_journals, CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT publication.jid), 0) AS ratio FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/14 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,607 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,608 - INFO - PROMPT: How does the ratio of authors to organizations differ by continent?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT organization.continent, COUNT(DISTINCT author.aid)::float / NULLIF(COUNT(DISTINCT organization.oid), 0) AS ratio FROM organization LEFT JOIN author ON author.oid = organization.oid GROUP BY organization.continent ORDER BY ratio DESC NULLS LAST;WITH author_counts AS (SELECT o.continent, COUNT(DISTINCT a.aid) AS author_count FROM author AS a JOIN organization AS o ON a.oid = o.oid GROUP BY o.continent), organization_counts AS (SELECT o.continent, COUNT(DISTINCT o.oid) AS organization_count FROM organization AS o GROUP BY o.continent) SELECT ac.continent, CAST(ac.author_count AS FLOAT) / NULLIF(oc.organization_count, 0) AS author_to_organization_ratio FROM author_counts AS ac JOIN organization_counts AS oc ON ac.continent = oc.continent ORDER BY author_to_organization_ratio DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/15 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,616 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,616 - INFO - PROMPT: What is the total number of publications presented in each conference?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {conference.name, conference.cid}, COUNT(publication.pid) AS total_publications FROM publication JOIN conference ON publication.cid = conference.cid GROUP BY {} ORDER BY total_publications DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/16 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,652 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,653 - INFO - PROMPT: Which author had the most publications in the year 2021 and how many publications did he/she have that year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, COUNT(publication.pid) AS publication_count FROM writes JOIN author ON writes.aid = author.aid JOIN publication ON writes.pid = publication.pid WHERE publication.year = 2021 GROUP BY {} ORDER BY publication_count DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/17 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,666 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,667 - INFO - PROMPT: What is the total number of publications in each journal, ordered by the number of publications in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM publication JOIN journal ON publication.jid=journal.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM journal LEFT JOIN publication ON journal.jid=publication.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/18 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,744 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,745 - INFO - PROMPT: How many publications were presented at each conference, ordered by the number of publications in descending order? Give the names of the conferences and their corresponding number of publications.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT conference.name, COUNT(publication.pid) AS num_publications FROM publication JOIN conference ON publication.cid=conference.cid GROUP BY conference.name, conference.cid ORDER BY num_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/19 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,760 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,762 - INFO - PROMPT: How many publications were published in journals whose names start with the letter "J"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT count(DISTINCT publication.pid) FROM publication JOIN journal ON publication.jid = journal.jid WHERE journal.name ilike 'J%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/20 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,777 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,779 - INFO - PROMPT: Which organizations have authors who have written publications in the domain "Machine Learning"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {organization.name, organization.oid} FROM organization JOIN author ON organization.oid = author.oid JOIN writes ON author.aid = writes.aid JOIN domain_publication ON writes.pid = domain_publication.pid JOIN domain ON domain_publication.did = domain.did WHERE domain.name = 'Machine Learning';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/21 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,795 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,795 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,797 - INFO - PROMPT: Which authors are not part of any organization?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {name, aid} FROM author WHERE oid IS NULL
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/22 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,798 - INFO - PROMPT: Which authors belong to the same domain as Martin?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {a2.name, a2.aid} FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%';SELECT DISTINCT a2.name, a2.aid FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%' AND a2.name NOT ILIKE '%martin%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/23 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,849 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,849 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,851 - INFO - PROMPT: What are the names of the authors who have written publications in the domain "Computer Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT author.name FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid JOIN domain_publication ON publication.pid = domain_publication.pid JOIN domain ON domain_publication.did = domain.did WHERE domain.name ilike '%computer%science%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/24 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,851 - INFO - PROMPT: What are the publications written by authors from the 'Sociology' domain and presented at conferences in the year 2020?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {publication.title, publication.pid} FROM DOMAIN JOIN domain_author ON domain.did = domain_author.did JOIN writes ON domain_author.aid = writes.aid JOIN publication ON writes.pid = publication.pid JOIN domain_conference ON domain.did = domain_conference.did WHERE domain.name ILIKE '%Sociology%' AND publication.year = 2020 AND publication.cid = domain_conference.cid;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/25 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,965 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,965 - INFO - PROMPT: How many students were predicted to graduate in the last 10 years?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT count(*) AS num_students_graduated FROM student WHERE predicted_graduation_semester >= DATE_TRUNC('year', CURRENT_DATE) - interval '10 year';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/26 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,980 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,981 - INFO - PROMPT: What's the average predicted time to graduation since admission in no. of days?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT avg(predicted_graduation_semester - admit_term) AS average_predicted_time_to_graduation FROM student;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/27 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,986 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,987 - INFO - PROMPT: How long has it been in days since the last admitted student? Give the answer as an integer.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CURRENT_DATE - max(admit_term) AS duration_since_last_admitted_student FROM student;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/28 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:35,996 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:35,996 - INFO - PROMPT: Return the course id's that are offered in either semesters 1 or 2 and ends before 1pm and had an instructor on thursday
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT co.course_id FROM course_offering co JOIN offering_instructor oi ON co.offering_id = oi.offering_id WHERE (co.semester = 1 OR co.semester = 2) AND co.end_time < '13:00:00' AND co.thursday IS NOT NULL;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/29 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,071 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,072 - INFO - PROMPT: What is the total number of students who found the instructor to be hilarious per course id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, SUM(course_tags_count.hilarious) AS total_hilarious FROM course_tags_count GROUP BY course_tags_count.course_id;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/30 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,090 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,091 - INFO - PROMPT: What is the average clarity score for each instructor who taught a course?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {i.name, i.instructor_id}, AVG(c.clarity_score) FROM course c JOIN course_offering co ON c.course_id = co.course_id JOIN offering_instructor oi ON co.offering_id = oi.offering_id JOIN instructor i ON oi.instructor_id = i.instructor_id GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/31 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,122 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,123 - INFO - PROMPT: How many course offerings have a final exam and how many do not?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.has_final_exam, COUNT(offering_id) AS num_courses FROM course_offering GROUP BY course_offering.has_final_exam;SELECT COUNT(CASE WHEN co.has_final_exam THEN 1 END) AS num_with_final_exam, COUNT(CASE WHEN NOT co.has_final_exam THEN 1 END) AS num_without_final_exam FROM course_offering co;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/32 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,141 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,142 - INFO - PROMPT: How many courses does each department offer?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.department, COUNT(DISTINCT course.course_id) AS num_courses FROM course GROUP BY course.department ORDER BY num_courses DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/33 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,157 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,157 - INFO - PROMPT: How many courses are offered for each semester id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.semester, COUNT(DISTINCT course_offering.course_id) AS num_courses FROM course_offering GROUP BY course_offering.semester ORDER BY course_offering.semester;SELECT semester.semester_id, COUNT(DISTINCT course_offering.course_id) AS num_courses FROM semester LEFT JOIN course_offering ON semester.semester_id = course_offering.semester GROUP BY semester.semester_id;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/34 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,179 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,180 - INFO - PROMPT: Which course has the highest number of enrolled students, and what is the enrollment number?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.name, course.course_id, course.number}, course.num_enrolled FROM course ORDER BY course.num_enrolled DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/35 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,189 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,189 - INFO - PROMPT: What month were most students admitted? Return the no. of students and the month as a date
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT date_trunc('month', s.admit_term) AS month, COUNT(*) AS total_students FROM student s GROUP BY MONTH ORDER BY total_students DESC LIMIT 1;SELECT TO_CHAR(DATE_TRUNC('month', s.admit_term), 'YYYY-MM') AS month, COUNT(*) AS total_students FROM student s GROUP BY month ORDER BY total_students DESC LIMIT 1;SELECT date_trunc('month', admit_term)::date AS MONTH, COUNT(*) AS num_students FROM student GROUP BY MONTH ORDER BY COUNT(*) DESC LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/36 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,212 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,213 - INFO - PROMPT: What is the total number of students who participated actively for each course id, ordered from highest to lowest participants?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, course_tags_count.participation FROM course_tags_count ORDER BY course_tags_count.participation DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/37 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,229 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,229 - INFO - PROMPT: What is the total number of students enrolled in each course, ordered from highest to lowest?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.course_id, course.name, course.number}, SUM(course.num_enrolled) AS total_students FROM course GROUP BY {} ORDER BY total_students DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/38 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,246 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,247 - INFO - PROMPT: What is the total number of credits earned by each student, ordered from highest to lowest? Give the student id and the total number of credits.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT student.student_id, student.total_credit FROM student ORDER BY student.total_credit DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/39 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,285 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,286 - INFO - PROMPT: What is the name of the instructor who has taught the most courses, and how many courses have they taught?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT instructor.name, count(offering_instructor.offering_id) AS num_courses FROM offering_instructor JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id GROUP BY instructor.name ORDER BY num_courses DESC LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/40 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,343 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,344 - INFO - PROMPT: What is the ratio of the total number of students enrolled in courses with exams to the total number of students enrolled in courses without exams?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT SUM(CASE WHEN c.has_exams THEN c.num_enrolled ELSE 0 END)::FLOAT / SUM(CASE WHEN NOT c.has_exams THEN c.num_enrolled ELSE 0 END) AS ratio FROM course c;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/41 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,348 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,349 - INFO - PROMPT: What is the ratio of the number of students who found the grading criteria clear and easy to understand to the number of students who received good feedback from the instructor for each course id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, CAST(course_tags_count.clear_grading AS FLOAT) / NULLIF(course_tags_count.good_feedback, 0) AS ratio FROM course_tags_count ORDER BY course_tags_count.course_id NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/42 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,379 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,380 - INFO - PROMPT: What is the ratio of the number of courses with projects to the number of courses with exams in each semester id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.semester, CAST(SUM(CASE WHEN course.has_projects THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(SUM(CASE WHEN course.has_exams THEN 1 ELSE 0 END), 0) AS ratio FROM course JOIN course_offering ON course.course_id = course_offering.course_id GROUP BY course_offering.semester ORDER BY course_offering.semester NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/43 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,389 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,390 - INFO - PROMPT: What is the ratio of helpfulness scores to clarity scores for each course ID?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.course_id, CAST(course.helpfulness_score AS FLOAT) / NULLIF(course.clarity_score, 0) AS ratio FROM course;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/44 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,461 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,462 - INFO - PROMPT: Which courses have been taken by students in the Computer Science program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {course.name, course.course_id, course.number} AS course_name FROM student JOIN student_record ON student.student_id = student_record.student_id JOIN program ON student.program_id = program.program_id JOIN course ON student_record.course_id = course.course_id WHERE program.name ILIKE '%Computer Science%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/45 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,466 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,467 - INFO - PROMPT: How does the ratio of enrolled students to the number of reviews vary across different courses?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.course_id, course.name, course.number}, CAST(course.num_enrolled AS FLOAT) / NULLIF(course.num_reviews, 0) AS student_review_ratio FROM course ORDER BY student_review_ratio NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/46 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,491 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,492 - INFO - PROMPT: Which courses have a final project and a final exam?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {course.name, course.course_id, course.number} FROM course_offering JOIN course ON course_offering.course_id = course.course_id WHERE course_offering.has_final_project = true AND course_offering.has_final_exam = true;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/47 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,525 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,526 - INFO - PROMPT: What is the total number of students who have taken a course with a final project or exam?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT COUNT(DISTINCT student_record.student_id) AS total_students FROM student_record JOIN course_offering ON student_record.course_id = course_offering.course_id WHERE course_offering.has_final_project = true OR course_offering.has_final_exam = true;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/48 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,537 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,538 - INFO - PROMPT: What is the total number of credits earned by students in each program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {program.name, program.program_id}, SUM(student.total_credit) AS total_credits FROM student JOIN program ON student.program_id = program.program_id GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/49 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,597 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,598 - INFO - PROMPT: How many students have declared a major in each program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {program.name, program.program_id}, COUNT(student.student_id) AS number_of_students FROM student JOIN program ON student.program_id = program.program_id WHERE student.declare_major IS NOT NULL GROUP BY {} ORDER BY number_of_students DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/50 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,614 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,643 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,643 - INFO - PROMPT: Which students have declared a minor program? List their firstname and lastname. Order the results by the students' last names.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT student.firstname, student.lastname FROM student WHERE student.minor IS NOT NULL ORDER BY student.lastname NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/51 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,644 - INFO - PROMPT: What is the average GPA of students in the program mathematics?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT AVG(student.total_gpa) FROM student JOIN program ON student.program_id = program.program_id WHERE LOWER(program.name) = 'mathematics';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/52 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,653 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,654 - INFO - PROMPT: What are the names of all the courses offered by the department of Computer Science?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.name FROM course WHERE course.department ILIKE '%Computer Science%' ORDER BY course.name ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/53 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,677 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,678 - INFO - PROMPT: What are the easiness scores for courses in the "Computer Science" department? Show both courses and scores.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.name, course.course_id, course.number}, course.easiness_score FROM course WHERE course.department = 'Computer Science';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/54 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,719 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,720 - INFO - PROMPT: Return the student IDs who have taken an in-person course and have gotten a grade of A or C.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT student_id FROM student_record WHERE student_record.how = 'in-person' AND student_record.grade IN ('A', 'C');
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/55 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,807 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,808 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,809 - INFO - PROMPT: Count the number of flight departures for each month?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT month.month_name, count(*) AS departure_count FROM flight JOIN month ON extract(MONTH FROM to_timestamp(flight.departure_time)) = month.month_number GROUP BY month.month_name, month.month_number ORDER BY month.month_number;SELECT date_trunc('month', to_timestamp(flight.departure_time)) AS month, COUNT(*) AS num_departures FROM flight GROUP BY MONTH ORDER BY MONTH;SELECT EXTRACT(MONTH FROM to_timestamp(flight.departure_time)) AS month, COUNT(*) AS num_departures FROM flight GROUP BY month ORDER BY month;SELECT TO_CHAR(TO_TIMESTAMP(flight.departure_time), 'YYYY-MM') AS month, COUNT(*) AS num_departures FROM flight GROUP BY month ORDER BY month;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/56 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,809 - INFO - PROMPT: What's the average duration between departure and arrival times minus 34 minutes? Convert from UNIX to regular datetime, and return the answer in minutes
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT avg(to_timestamp(arrival_time) - to_timestamp(departure_time) - interval '34 minutes') AS average_duration FROM flight;SELECT AVG(arrival_time - departure_time)/60 - 34 AS average_duration FROM flight;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/57 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,838 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,839 - INFO - PROMPT: What's the absolute difference in time in days between today and the earliest flight departure? Give the answer as an integer.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT date_part('day', CURRENT_DATE - to_timestamp(departure_time)) AS difference_in_days FROM flight ORDER BY departure_time LIMIT 1;SELECT (CURRENT_DATE - TO_TIMESTAMP(MIN(f.departure_time))) AS days_difference FROM flight f;SELECT CAST(ABS((EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) - EXTRACT(EPOCH FROM TO_TIMESTAMP(MIN(departure_time)))) / 86400) AS INTEGER) AS diff_in_days FROM flight;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/58 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,845 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,845 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,846 - INFO - PROMPT: Which flight has the shortest duration between departure and arrival times? Convert to integer minutes.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {flight.flight_number, flight.flight_id}, (arrival_time - departure_time) / 60 AS duration_minutes FROM flight ORDER BY duration_minutes LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/59 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,846 - INFO - PROMPT: What's the earliest flight departure time in the day in HH:MM?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT to_char(to_timestamp(departure_time)::TIME, 'HH24:MI') AS earliest_departure_time FROM flight ORDER BY earliest_departure_time LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/60 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,965 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,966 - INFO - PROMPT: What is the total cost of round-trip fares for each airline code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_airline, SUM(fare.round_trip_cost) AS total_round_trip_cost FROM fare GROUP BY fare.fare_airline ORDER BY total_round_trip_cost DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/61 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:36,980 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:36,982 - INFO - PROMPT: What is the average cost of round-trip fares from Los Angeles (LAX) to Chicago (ORD) for each airline, sorted in descending order by average cost?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_airline, AVG(fare.round_trip_cost) AS average_cost FROM fare WHERE fare.from_airport = 'LAX' AND fare.to_airport = 'ORD' GROUP BY fare.fare_airline ORDER BY average_cost DESC NULLS LAST;SELECT airline.airline_name, AVG(fare.round_trip_cost) AS avg_round_trip_cost FROM fare JOIN airline ON fare.fare_airline = airline.airline_code WHERE fare.from_airport = 'LAX' AND fare.to_airport = 'ORD' GROUP BY airline.airline_name ORDER BY avg_round_trip_cost DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/62 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,006 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,007 - INFO - PROMPT: How many meals are served in each compartment, sorted by the number of meals in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT food_service.compartment, COUNT(food_service.meal_number) AS number_of_meals FROM food_service GROUP BY food_service.compartment ORDER BY number_of_meals DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/63 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,026 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,027 - INFO - PROMPT: What is the average cost of a one-way trip for each airport pair in the fare table?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT f.from_airport, f.to_airport, AVG(f.one_direction_cost) AS average_cost FROM fare f GROUP BY f.from_airport, f.to_airport ORDER BY f.from_airport, f.to_airport NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/64 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,035 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,036 - INFO - PROMPT: How many flights depart from each airport code, excluding departures with connections?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT airport.airport_code, COUNT(flight.from_airport) AS num_departures FROM airport LEFT JOIN flight ON airport.airport_code = flight.from_airport AND flight.connections=0 GROUP BY airport.airport_code;SELECT airport.airport_code, COUNT(flight.from_airport) AS num_departures FROM airport JOIN flight ON airport.airport_code = flight.from_airport WHERE flight.connections=0 GROUP BY airport.airport_code;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/65 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,061 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,062 - INFO - PROMPT: Which flight ids to Chicago (ORD) have the longest duration from departure to arrival, sorted in ascending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.flight_id, (flight.arrival_time - flight.departure_time) AS duration FROM flight WHERE to_airport = 'ORD' ORDER BY duration ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/66 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,085 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,086 - INFO - PROMPT: Which airports have the shortest minimum connect time, sorted in ascending order? Show the minimum connect time.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {airport.airport_name, airport.airport_code}, airport.minimum_connect_time FROM airport ORDER BY airport.minimum_connect_time ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/67 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,088 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,089 - INFO - PROMPT: Which aircraft code can carry the highest weight of cargo that any aircraft can carry?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code FROM aircraft ORDER BY pay_load DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/68 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,131 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,132 - INFO - PROMPT: What are the top 2 airlines with the most flights?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {airline.airline_name, airline.airline_code}, COUNT(flight.flight_id) AS number_of_flights FROM flight JOIN airline ON flight.airline_code = airline.airline_code GROUP BY {} ORDER BY number_of_flights DESC NULLS LAST LIMIT 2;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/69 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,145 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,147 - INFO - PROMPT: What are the aircraft codes for all aircraft with a cruising speed of over 200 mph? sort the aircraft codes in ascending order.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code FROM aircraft WHERE aircraft.cruising_speed > 200 ORDER BY aircraft.aircraft_code ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/70 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,221 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,222 - INFO - PROMPT: What is the ratio of aircraft capacity to its range in miles for each aircraft code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code, CAST(aircraft.capacity AS FLOAT) / NULLIF(aircraft.range_miles, 0) AS capacity_range_ratio FROM aircraft;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/71 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,224 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,224 - INFO - PROMPT: What is the ratio of one-way trip costs to round-trip costs for each fare?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_id, fare.one_direction_cost::float / NULLIF(fare.round_trip_cost, 0) AS cost_ratio FROM fare ORDER BY cost_ratio;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/72 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,234 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,235 - INFO - PROMPT: Calculate the ratio of the maximum range to the maximum payload for each aircraft
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.range_miles::float / NULLIF(aircraft.pay_load, 0) AS range_to_payload_ratio FROM aircraft;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/73 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,250 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,251 - INFO - PROMPT: What is the proportion of flights with stops out of all flights for each airline code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.airline_code, CAST(SUM(CASE WHEN flight.stops > 0 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(COUNT(*), 0) AS ratio FROM flight GROUP BY flight.airline_code;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/74 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,292 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,293 - INFO - PROMPT: How does the average ratio of the cruising speed to the payload of an aircraft vary across different aircraft manufacturers?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.manufacturer, AVG(CAST(aircraft.cruising_speed AS FLOAT) / NULLIF(aircraft.pay_load, 0)) AS speed_payload_ratio FROM aircraft GROUP BY aircraft.manufacturer ORDER BY speed_payload_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/75 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,370 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,371 - INFO - PROMPT: Which flights serve meals in first class? Give me the flight id and meal description.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.flight_id, food_service.meal_description FROM flight JOIN food_service ON flight.meal_code = food_service.meal_code WHERE LOWER(food_service.compartment) LIKE '%first class%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/76 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,396 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,397 - INFO - PROMPT: Which airlines offer flights from LAX to ORD?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {airline.airline_name, airline.airline_code} FROM flight JOIN airline ON flight.airline_code = airline.airline_code WHERE flight.from_airport = 'LAX' AND flight.to_airport = 'ORD';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/77 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:10:37,411 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,414 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,427 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,465 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,481 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,567 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,583 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,608 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,609 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,618 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,652 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,667 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,757 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,776 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,809 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,828 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,846 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,891 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,930 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,938 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,955 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,980 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:37,990 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,035 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,091 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,130 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,133 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,147 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,153 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,193 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,277 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,296 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,311 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,315 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,321 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,385 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,391 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,438 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,466 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,491 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,502 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,519 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,524 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,550 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,597 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,642 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,673 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,684 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,691 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,735 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,743 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,770 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,821 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,822 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,879 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,897 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,898 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,939 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,953 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:38,982 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,035 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,058 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,083 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,085 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,094 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,134 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,140 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,285 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,286 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,298 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,298 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,302 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,450 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,465 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,483 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,484 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,495 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,557 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,563 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,639 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,647 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,673 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,681 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,697 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,744 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,845 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,846 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,856 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,893 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:39,998 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,015 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,021 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,041 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,055 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,074 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,145 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,164 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,209 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,211 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,218 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,240 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,255 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,388 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,394 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,398 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,405 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,423 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,537 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,565 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,571 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,573 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,579 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,636 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,750 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,750 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,756 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,759 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,776 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,926 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,927 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,933 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,958 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:40,967 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,096 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,111 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,116 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,117 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,146 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,197 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,249 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,274 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,277 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:10:41,297 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,628 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,630 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,636 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,636 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,640 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,640 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,652 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,653 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,752 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,753 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,780 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,781 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/6 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,792 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,793 - INFO - PROMPT: What are the top 3 publications with the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {publication.title, publication.pid}, publication.citation_num FROM publication ORDER BY publication.citation_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/7 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,794 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,795 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/8 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,841 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,842 - INFO - PROMPT: What are the titles of all publications ordered alphabetically?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT publication.title FROM publication ORDER BY publication.title ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/9 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,888 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,892 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/10 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,892 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,893 - INFO - PROMPT: What is the ratio of publications to authors in the database?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT author.aid), 0) AS publication_to_author_ratio FROM publication, author;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/11 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,963 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,964 - INFO - PROMPT: How does the ratio of publications to journals change over the years? Return the annual numbers of publications and journals as well.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS num_publications, COUNT(DISTINCT publication.jid) AS num_journals, CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT publication.jid), 0) AS ratio FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/12 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:41,966 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:41,966 - INFO - PROMPT: What is the ratio of the total number of publications to the total number of keywords within each domain ID? Show all domain IDs.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_publication LEFT JOIN domain_keyword ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_keyword LEFT JOIN domain_publication ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT d.did, COALESCE(CAST(COUNT(DISTINCT dp.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT dk.kid), 0), 0) AS publication_to_keyword_ratio FROM domain d LEFT JOIN domain_publication dp ON d.did = dp.did LEFT JOIN domain_keyword dk ON d.did = dk.did GROUP BY d.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/13 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,018 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,019 - INFO - PROMPT: What is the ratio of publications presented in conferences to publications published in journals?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT CASE WHEN cid IS NOT NULL THEN pid END) AS FLOAT) / NULLIF(COUNT(DISTINCT CASE WHEN jid IS NOT NULL THEN pid END), 0) AS ratio FROM publication;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/14 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,034 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,035 - INFO - PROMPT: How does the ratio of authors to organizations differ by continent?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT organization.continent, COUNT(DISTINCT author.aid)::float / NULLIF(COUNT(DISTINCT organization.oid), 0) AS ratio FROM organization LEFT JOIN author ON author.oid = organization.oid GROUP BY organization.continent ORDER BY ratio DESC NULLS LAST;WITH author_counts AS (SELECT o.continent, COUNT(DISTINCT a.aid) AS author_count FROM author AS a JOIN organization AS o ON a.oid = o.oid GROUP BY o.continent), organization_counts AS (SELECT o.continent, COUNT(DISTINCT o.oid) AS organization_count FROM organization AS o GROUP BY o.continent) SELECT ac.continent, CAST(ac.author_count AS FLOAT) / NULLIF(oc.organization_count, 0) AS author_to_organization_ratio FROM author_counts AS ac JOIN organization_counts AS oc ON ac.continent = oc.continent ORDER BY author_to_organization_ratio DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/15 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,084 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,085 - INFO - PROMPT: What is the total number of publications in each journal, ordered by the number of publications in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM publication JOIN journal ON publication.jid=journal.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM journal LEFT JOIN publication ON journal.jid=publication.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/16 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,094 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,094 - INFO - PROMPT: What is the total number of publications presented in each conference?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {conference.name, conference.cid}, COUNT(publication.pid) AS total_publications FROM publication JOIN conference ON publication.cid = conference.cid GROUP BY {} ORDER BY total_publications DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/17 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,124 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,125 - INFO - PROMPT: How many publications were published in journals whose names start with the letter "J"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT count(DISTINCT publication.pid) FROM publication JOIN journal ON publication.jid = journal.jid WHERE journal.name ilike 'J%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/18 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,144 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,145 - INFO - PROMPT: Which author had the most publications in the year 2021 and how many publications did he/she have that year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, COUNT(publication.pid) AS publication_count FROM writes JOIN author ON writes.aid = author.aid JOIN publication ON writes.pid = publication.pid WHERE publication.year = 2021 GROUP BY {} ORDER BY publication_count DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/19 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,191 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,192 - INFO - PROMPT: Which authors belong to the same domain as Martin?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {a2.name, a2.aid} FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%';SELECT DISTINCT a2.name, a2.aid FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%' AND a2.name NOT ILIKE '%martin%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/20 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,194 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,195 - INFO - PROMPT: Which organizations have authors who have written publications in the domain "Machine Learning"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {organization.name, organization.oid} FROM organization JOIN author ON organization.oid = author.oid JOIN writes ON author.aid = writes.aid JOIN domain_publication ON writes.pid = domain_publication.pid JOIN domain ON domain_publication.did = domain.did WHERE domain.name = 'Machine Learning';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/21 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,240 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,241 - INFO - PROMPT: What are the publications written by authors from the 'Sociology' domain and presented at conferences in the year 2020?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {publication.title, publication.pid} FROM DOMAIN JOIN domain_author ON domain.did = domain_author.did JOIN writes ON domain_author.aid = writes.aid JOIN publication ON writes.pid = publication.pid JOIN domain_conference ON domain.did = domain_conference.did WHERE domain.name ILIKE '%Sociology%' AND publication.year = 2020 AND publication.cid = domain_conference.cid;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/22 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,259 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,260 - INFO - PROMPT: Which authors are not part of any organization?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {name, aid} FROM author WHERE oid IS NULL
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/23 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,299 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,300 - INFO - PROMPT: What are the names of the authors who have written publications in the domain "Computer Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT author.name FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid JOIN domain_publication ON publication.pid = domain_publication.pid JOIN domain ON domain_publication.did = domain.did WHERE domain.name ilike '%computer%science%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/24 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,329 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,329 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,330 - INFO - PROMPT: What's the average predicted time to graduation since admission in no. of days?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT avg(predicted_graduation_semester - admit_term) AS average_predicted_time_to_graduation FROM student;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/25 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,331 - INFO - PROMPT: What month were most students admitted? Return the no. of students and the month as a date
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT date_trunc('month', s.admit_term) AS month, COUNT(*) AS total_students FROM student s GROUP BY MONTH ORDER BY total_students DESC LIMIT 1;SELECT TO_CHAR(DATE_TRUNC('month', s.admit_term), 'YYYY-MM') AS month, COUNT(*) AS total_students FROM student s GROUP BY month ORDER BY total_students DESC LIMIT 1;SELECT date_trunc('month', admit_term)::date AS MONTH, COUNT(*) AS num_students FROM student GROUP BY MONTH ORDER BY COUNT(*) DESC LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/26 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,339 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,340 - INFO - PROMPT: How many students were predicted to graduate in the last 10 years?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT count(*) AS num_students_graduated FROM student WHERE predicted_graduation_semester >= DATE_TRUNC('year', CURRENT_DATE) - interval '10 year';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/27 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,381 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,382 - INFO - PROMPT: How long has it been in days since the last admitted student? Give the answer as an integer.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CURRENT_DATE - max(admit_term) AS duration_since_last_admitted_student FROM student;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/28 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,488 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,489 - INFO - PROMPT: What is the average clarity score for each instructor who taught a course?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {i.name, i.instructor_id}, AVG(c.clarity_score) FROM course c JOIN course_offering co ON c.course_id = co.course_id JOIN offering_instructor oi ON co.offering_id = oi.offering_id JOIN instructor i ON oi.instructor_id = i.instructor_id GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/29 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,494 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,494 - INFO - PROMPT: Return the course id's that are offered in either semesters 1 or 2 and ends before 1pm and had an instructor on thursday
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT co.course_id FROM course_offering co JOIN offering_instructor oi ON co.offering_id = oi.offering_id WHERE (co.semester = 1 OR co.semester = 2) AND co.end_time < '13:00:00' AND co.thursday IS NOT NULL;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/30 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,503 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,503 - INFO - PROMPT: How many course offerings have a final exam and how many do not?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.has_final_exam, COUNT(offering_id) AS num_courses FROM course_offering GROUP BY course_offering.has_final_exam;SELECT COUNT(CASE WHEN co.has_final_exam THEN 1 END) AS num_with_final_exam, COUNT(CASE WHEN NOT co.has_final_exam THEN 1 END) AS num_without_final_exam FROM course_offering co;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/31 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,527 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,528 - INFO - PROMPT: What is the total number of students who found the instructor to be hilarious per course id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, SUM(course_tags_count.hilarious) AS total_hilarious FROM course_tags_count GROUP BY course_tags_count.course_id;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/32 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,591 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,592 - INFO - PROMPT: How many publications were presented at each conference, ordered by the number of publications in descending order? Give the names of the conferences and their corresponding number of publications.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT conference.name, COUNT(publication.pid) AS num_publications FROM publication JOIN conference ON publication.cid=conference.cid GROUP BY conference.name, conference.cid ORDER BY num_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/33 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,623 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,624 - INFO - PROMPT: How many courses does each department offer?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.department, COUNT(DISTINCT course.course_id) AS num_courses FROM course GROUP BY course.department ORDER BY num_courses DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/34 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,637 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,638 - INFO - PROMPT: How many courses are offered for each semester id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.semester, COUNT(DISTINCT course_offering.course_id) AS num_courses FROM course_offering GROUP BY course_offering.semester ORDER BY course_offering.semester;SELECT semester.semester_id, COUNT(DISTINCT course_offering.course_id) AS num_courses FROM semester LEFT JOIN course_offering ON semester.semester_id = course_offering.semester GROUP BY semester.semester_id;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/35 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,643 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,644 - INFO - PROMPT: Which course has the highest number of enrolled students, and what is the enrollment number?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.name, course.course_id, course.number}, course.num_enrolled FROM course ORDER BY course.num_enrolled DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/36 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,673 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,674 - INFO - PROMPT: What is the total number of students enrolled in each course, ordered from highest to lowest?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.course_id, course.name, course.number}, SUM(course.num_enrolled) AS total_students FROM course GROUP BY {} ORDER BY total_students DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/37 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,676 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,676 - INFO - PROMPT: What is the total number of students who participated actively for each course id, ordered from highest to lowest participants?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, course_tags_count.participation FROM course_tags_count ORDER BY course_tags_count.participation DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/38 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,715 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,716 - INFO - PROMPT: What is the total number of credits earned by each student, ordered from highest to lowest? Give the student id and the total number of credits.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT student.student_id, student.total_credit FROM student ORDER BY student.total_credit DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/39 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,776 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,777 - INFO - PROMPT: What is the ratio of the total number of students enrolled in courses with exams to the total number of students enrolled in courses without exams?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT SUM(CASE WHEN c.has_exams THEN c.num_enrolled ELSE 0 END)::FLOAT / SUM(CASE WHEN NOT c.has_exams THEN c.num_enrolled ELSE 0 END) AS ratio FROM course c;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/40 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,790 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,791 - INFO - PROMPT: What is the name of the instructor who has taught the most courses, and how many courses have they taught?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT instructor.name, count(offering_instructor.offering_id) AS num_courses FROM offering_instructor JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id GROUP BY instructor.name ORDER BY num_courses DESC LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/41 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,806 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,807 - INFO - PROMPT: What is the ratio of the number of students who found the grading criteria clear and easy to understand to the number of students who received good feedback from the instructor for each course id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_tags_count.course_id, CAST(course_tags_count.clear_grading AS FLOAT) / NULLIF(course_tags_count.good_feedback, 0) AS ratio FROM course_tags_count ORDER BY course_tags_count.course_id NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/42 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,821 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,822 - INFO - PROMPT: What is the ratio of the number of courses with projects to the number of courses with exams in each semester id?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course_offering.semester, CAST(SUM(CASE WHEN course.has_projects THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(SUM(CASE WHEN course.has_exams THEN 1 ELSE 0 END), 0) AS ratio FROM course JOIN course_offering ON course.course_id = course_offering.course_id GROUP BY course_offering.semester ORDER BY course_offering.semester NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/43 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,824 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,825 - INFO - PROMPT: What is the ratio of helpfulness scores to clarity scores for each course ID?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.course_id, CAST(course.helpfulness_score AS FLOAT) / NULLIF(course.clarity_score, 0) AS ratio FROM course;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/44 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,863 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,864 - INFO - PROMPT: How does the ratio of enrolled students to the number of reviews vary across different courses?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.course_id, course.name, course.number}, CAST(course.num_enrolled AS FLOAT) / NULLIF(course.num_reviews, 0) AS student_review_ratio FROM course ORDER BY student_review_ratio NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/45 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,876 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,877 - INFO - PROMPT: Which courses have been taken by students in the Computer Science program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {course.name, course.course_id, course.number} AS course_name FROM student JOIN student_record ON student.student_id = student_record.student_id JOIN program ON student.program_id = program.program_id JOIN course ON student_record.course_id = course.course_id WHERE program.name ILIKE '%Computer Science%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/46 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,936 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,937 - INFO - PROMPT: Which courses have a final project and a final exam?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {course.name, course.course_id, course.number} FROM course_offering JOIN course ON course_offering.course_id = course.course_id WHERE course_offering.has_final_project = true AND course_offering.has_final_exam = true;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/47 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,951 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,951 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,952 - INFO - PROMPT: What is the total number of credits earned by students in each program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {program.name, program.program_id}, SUM(student.total_credit) AS total_credits FROM student JOIN program ON student.program_id = program.program_id GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/48 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,954 - INFO - PROMPT: What is the total number of students who have taken a course with a final project or exam?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT COUNT(DISTINCT student_record.student_id) AS total_students FROM student_record JOIN course_offering ON student_record.course_id = course_offering.course_id WHERE course_offering.has_final_project = true OR course_offering.has_final_exam = true;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/49 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,988 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,989 - INFO - PROMPT: How many students have declared a major in each program?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {program.name, program.program_id}, COUNT(student.student_id) AS number_of_students FROM student JOIN program ON student.program_id = program.program_id WHERE student.declare_major IS NOT NULL GROUP BY {} ORDER BY number_of_students DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/50 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:42,991 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:42,992 - INFO - PROMPT: Which students have declared a minor program? List their firstname and lastname. Order the results by the students' last names.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT student.firstname, student.lastname FROM student WHERE student.minor IS NOT NULL ORDER BY student.lastname NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/51 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,030 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,031 - INFO - PROMPT: What is the average GPA of students in the program mathematics?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT AVG(student.total_gpa) FROM student JOIN program ON student.program_id = program.program_id WHERE LOWER(program.name) = 'mathematics';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/52 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,094 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,095 - INFO - PROMPT: What are the names of all the courses offered by the department of Computer Science?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT course.name FROM course WHERE course.department ILIKE '%Computer Science%' ORDER BY course.name ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/53 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,102 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,103 - INFO - PROMPT: What are the easiness scores for courses in the "Computer Science" department? Show both courses and scores.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {course.name, course.course_id, course.number}, course.easiness_score FROM course WHERE course.department = 'Computer Science';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/54 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,161 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,162 - INFO - PROMPT: Return the student IDs who have taken an in-person course and have gotten a grade of A or C.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT student_id FROM student_record WHERE student_record.how = 'in-person' AND student_record.grade IN ('A', 'C');
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/55 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,166 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,166 - INFO - PROMPT: What's the average duration between departure and arrival times minus 34 minutes? Convert from UNIX to regular datetime, and return the answer in minutes
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT avg(to_timestamp(arrival_time) - to_timestamp(departure_time) - interval '34 minutes') AS average_duration FROM flight;SELECT AVG(arrival_time - departure_time)/60 - 34 AS average_duration FROM flight;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/56 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,170 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,170 - INFO - PROMPT: Which flight has the shortest duration between departure and arrival times? Convert to integer minutes.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {flight.flight_number, flight.flight_id}, (arrival_time - departure_time) / 60 AS duration_minutes FROM flight ORDER BY duration_minutes LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/57 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,199 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,200 - INFO - PROMPT: Count the number of flight departures for each month?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT month.month_name, count(*) AS departure_count FROM flight JOIN month ON extract(MONTH FROM to_timestamp(flight.departure_time)) = month.month_number GROUP BY month.month_name, month.month_number ORDER BY month.month_number;SELECT date_trunc('month', to_timestamp(flight.departure_time)) AS month, COUNT(*) AS num_departures FROM flight GROUP BY MONTH ORDER BY MONTH;SELECT EXTRACT(MONTH FROM to_timestamp(flight.departure_time)) AS month, COUNT(*) AS num_departures FROM flight GROUP BY month ORDER BY month;SELECT TO_CHAR(TO_TIMESTAMP(flight.departure_time), 'YYYY-MM') AS month, COUNT(*) AS num_departures FROM flight GROUP BY month ORDER BY month;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/58 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,213 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,214 - INFO - PROMPT: What's the earliest flight departure time in the day in HH:MM?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT to_char(to_timestamp(departure_time)::TIME, 'HH24:MI') AS earliest_departure_time FROM flight ORDER BY earliest_departure_time LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/59 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,312 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,313 - INFO - PROMPT: What's the absolute difference in time in days between today and the earliest flight departure? Give the answer as an integer.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT date_part('day', CURRENT_DATE - to_timestamp(departure_time)) AS difference_in_days FROM flight ORDER BY departure_time LIMIT 1;SELECT (CURRENT_DATE - TO_TIMESTAMP(MIN(f.departure_time))) AS days_difference FROM flight f;SELECT CAST(ABS((EXTRACT(EPOCH FROM CURRENT_TIMESTAMP) - EXTRACT(EPOCH FROM TO_TIMESTAMP(MIN(departure_time)))) / 86400) AS INTEGER) AS diff_in_days FROM flight;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/60 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,325 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,326 - INFO - PROMPT: What is the average cost of round-trip fares from Los Angeles (LAX) to Chicago (ORD) for each airline, sorted in descending order by average cost?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_airline, AVG(fare.round_trip_cost) AS average_cost FROM fare WHERE fare.from_airport = 'LAX' AND fare.to_airport = 'ORD' GROUP BY fare.fare_airline ORDER BY average_cost DESC NULLS LAST;SELECT airline.airline_name, AVG(fare.round_trip_cost) AS avg_round_trip_cost FROM fare JOIN airline ON fare.fare_airline = airline.airline_code WHERE fare.from_airport = 'LAX' AND fare.to_airport = 'ORD' GROUP BY airline.airline_name ORDER BY avg_round_trip_cost DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/61 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,331 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,332 - INFO - PROMPT: What is the total cost of round-trip fares for each airline code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_airline, SUM(fare.round_trip_cost) AS total_round_trip_cost FROM fare GROUP BY fare.fare_airline ORDER BY total_round_trip_cost DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/62 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,348 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,349 - INFO - PROMPT: What is the average cost of a one-way trip for each airport pair in the fare table?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT f.from_airport, f.to_airport, AVG(f.one_direction_cost) AS average_cost FROM fare f GROUP BY f.from_airport, f.to_airport ORDER BY f.from_airport, f.to_airport NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/63 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,356 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,356 - INFO - PROMPT: How many meals are served in each compartment, sorted by the number of meals in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT food_service.compartment, COUNT(food_service.meal_number) AS number_of_meals FROM food_service GROUP BY food_service.compartment ORDER BY number_of_meals DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/64 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,401 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,403 - INFO - PROMPT: How many flights depart from each airport code, excluding departures with connections?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT airport.airport_code, COUNT(flight.from_airport) AS num_departures FROM airport LEFT JOIN flight ON airport.airport_code = flight.from_airport AND flight.connections=0 GROUP BY airport.airport_code;SELECT airport.airport_code, COUNT(flight.from_airport) AS num_departures FROM airport JOIN flight ON airport.airport_code = flight.from_airport WHERE flight.connections=0 GROUP BY airport.airport_code;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/65 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,462 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,463 - INFO - PROMPT: Which flight ids to Chicago (ORD) have the longest duration from departure to arrival, sorted in ascending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.flight_id, (flight.arrival_time - flight.departure_time) AS duration FROM flight WHERE to_airport = 'ORD' ORDER BY duration ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/66 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,496 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,497 - INFO - PROMPT: What are the top 2 airlines with the most flights?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {airline.airline_name, airline.airline_code}, COUNT(flight.flight_id) AS number_of_flights FROM flight JOIN airline ON flight.airline_code = airline.airline_code GROUP BY {} ORDER BY number_of_flights DESC NULLS LAST LIMIT 2;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/67 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,548 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,549 - INFO - PROMPT: Calculate the ratio of the maximum range to the maximum payload for each aircraft
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.range_miles::float / NULLIF(aircraft.pay_load, 0) AS range_to_payload_ratio FROM aircraft;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/68 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,558 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,559 - INFO - PROMPT: What are the aircraft codes for all aircraft with a cruising speed of over 200 mph? sort the aircraft codes in ascending order.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code FROM aircraft WHERE aircraft.cruising_speed > 200 ORDER BY aircraft.aircraft_code ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/69 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,565 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,566 - INFO - PROMPT: Which aircraft code can carry the highest weight of cargo that any aircraft can carry?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code FROM aircraft ORDER BY pay_load DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/70 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,593 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,594 - INFO - PROMPT: Which airports have the shortest minimum connect time, sorted in ascending order? Show the minimum connect time.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {airport.airport_name, airport.airport_code}, airport.minimum_connect_time FROM airport ORDER BY airport.minimum_connect_time ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/71 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,603 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,603 - INFO - PROMPT: What is the ratio of one-way trip costs to round-trip costs for each fare?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT fare.fare_id, fare.one_direction_cost::float / NULLIF(fare.round_trip_cost, 0) AS cost_ratio FROM fare ORDER BY cost_ratio;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/72 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,657 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,661 - INFO - PROMPT: What is the ratio of aircraft capacity to its range in miles for each aircraft code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.aircraft_code, CAST(aircraft.capacity AS FLOAT) / NULLIF(aircraft.range_miles, 0) AS capacity_range_ratio FROM aircraft;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/73 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,699 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,700 - INFO - PROMPT: How does the average ratio of the cruising speed to the payload of an aircraft vary across different aircraft manufacturers?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT aircraft.manufacturer, AVG(CAST(aircraft.cruising_speed AS FLOAT) / NULLIF(aircraft.pay_load, 0)) AS speed_payload_ratio FROM aircraft GROUP BY aircraft.manufacturer ORDER BY speed_payload_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/74 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,706 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,706 - INFO - PROMPT: What is the proportion of flights with stops out of all flights for each airline code?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.airline_code, CAST(SUM(CASE WHEN flight.stops > 0 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(COUNT(*), 0) AS ratio FROM flight GROUP BY flight.airline_code;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/75 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,735 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,737 - INFO - PROMPT: Which airlines offer flights with a stopover in Dallas?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {airline.airline_name, airline.airline_code} FROM flight_stop JOIN airport ON flight_stop.stop_airport = airport.airport_code JOIN flight ON flight_stop.flight_id = flight.flight_id JOIN airline ON flight.airline_code = airline.airline_code WHERE airport.airport_location ILIKE '%Dallas%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/76 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,759 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,760 - INFO - PROMPT: Which airlines offer flights from LAX to ORD?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {airline.airline_name, airline.airline_code} FROM flight JOIN airline ON flight.airline_code = airline.airline_code WHERE flight.from_airport = 'LAX' AND flight.to_airport = 'ORD';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/77 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,762 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,763 - INFO - PROMPT: Which flights serve meals in first class? Give me the flight id and meal description.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT flight.flight_id, food_service.meal_description FROM flight JOIN food_service ON flight.meal_code = food_service.meal_code WHERE LOWER(food_service.compartment) LIKE '%first class%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/78 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,819 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,820 - INFO - PROMPT: Which airlines do not have any flights that either depart from/arrive at JFK, or have one or more stops?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {airline.airline_name, airline.airline_code} FROM airline WHERE airline.airline_code NOT IN (SELECT flight.airline_code FROM flight WHERE flight.from_airport = 'JFK' OR flight.to_airport = 'JFK' OR flight.stops > 0);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/79 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,832 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,833 - INFO - PROMPT: Which airlines offer flights from Chicago (ORD) to New York (JFK), and how many stops do they have, sorted by number of stops in ascending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {airline.airline_name, airline.airline_code}, flight.stops FROM flight JOIN airline ON flight.airline_code = airline.airline_code WHERE flight.from_airport = 'ORD' AND flight.to_airport = 'JFK' ORDER BY flight.stops NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/80 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,872 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,873 - INFO - PROMPT: What is the total cost of all round-trip fares from New York (JFK) to Los Angeles?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT SUM(fare.round_trip_cost) AS total_round_trip_cost FROM fare WHERE fare.from_airport = 'JFK' AND fare.to_airport = 'LAX';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/81 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,907 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,908 - INFO - PROMPT: Which flights operate on Mondays and Wednesdays? Give me the relevant flight numbers
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {flight.flight_number, flight.flight_id} FROM flight WHERE LOWER(flight.flight_days) LIKE '%mon%' AND LOWER(flight.flight_days) LIKE '%wed%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/82 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,920 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,921 - INFO - PROMPT: What is the minimum amount of time required for a connecting flight at JFK Airport?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT minimum_connect_time FROM airport WHERE airport_code = 'JFK';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/83 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,924 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,924 - INFO - PROMPT: How many flights require a round-trip to purchase the fare?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT COUNT(DISTINCT flight_fare.flight_id) FROM flight_fare JOIN fare ON flight_fare.fare_id = fare.fare_id WHERE fare.round_trip_required = 'Yes';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/84 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:43,956 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:43,957 - INFO - PROMPT: What is the total population in cities by country?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT city.country_name, SUM(city.population) AS total_population FROM city GROUP BY city.country_name ORDER BY total_population DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/85 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,003 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,004 - INFO - PROMPT: What is the average length of rivers in each country?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT river.country_name, AVG(river.length) AS average_length FROM river GROUP BY river.country_name ORDER BY average_length DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/86 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,044 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,045 - INFO - PROMPT: How many mountains are there in each country?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT mountain.country_name, COUNT(mountain.mountain_name) AS number_of_mountains FROM mountain GROUP BY mountain.country_name ORDER BY number_of_mountains DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/87 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,052 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,053 - INFO - PROMPT: How many rivers flow through each country?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT river.country_name, COUNT(DISTINCT river.river_name) AS number_of_rivers FROM river GROUP BY river.country_name ORDER BY number_of_rivers DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/88 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,084 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,085 - INFO - PROMPT: How many lakes are there in each state?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT lake.state_name, COUNT(lake.lake_name) AS lake_count FROM lake GROUP BY lake.state_name ORDER BY lake_count DESC;SELECT s.state_name, COUNT(l.lake_name) AS lake_count FROM state s LEFT JOIN lake l ON s.state_name = l.state_name GROUP BY s.state_name ORDER BY s.state_name;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/89 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,085 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,086 - INFO - PROMPT: Which states have the highest population density in people per square kilometer, ordered from highest to lowest?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT state.state_name, state.density FROM state ORDER BY state.density DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/90 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,095 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,095 - INFO - PROMPT: Which state code is Orlando International Airport in?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT state_code FROM airport WHERE airport_name ILIKE '%Orlando International Airport%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/91 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,149 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,151 - INFO - PROMPT: Which lakes have the largest areas in square kilometers, ordered from largest to smallest?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT lake.lake_name, lake.area FROM lake ORDER BY lake.area DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/92 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,158 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,159 - INFO - PROMPT: What are the top 5 cities with the highest population? Give both city names and the population.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT city.city_name, city.population FROM city ORDER BY city.population DESC NULLS LAST LIMIT 5;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/93 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,219 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,220 - INFO - PROMPT: What are the longest rivers in meters, ordered from longest to shortest?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT river.river_name, river.length FROM river ORDER BY river.length DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/94 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,240 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,241 - INFO - PROMPT: What is the ratio of the population of the United States to the population of California?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST(SUM(NULLIF(state.population, 0)) FILTER (WHERE LOWER(state.country_name) LIKE '%united states%') AS FLOAT) / CAST(SUM(NULLIF(state.population, 0)) FILTER (WHERE LOWER(state.state_name) LIKE '%california%') AS FLOAT) AS population_ratio FROM state;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/95 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,252 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,253 - INFO - PROMPT: What are the highest mountains in meters, ordered from highest to lowest altitude?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT mountain.mountain_name, mountain.mountain_altitude FROM mountain ORDER BY mountain.mountain_altitude DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/96 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,256 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,257 - INFO - PROMPT: What is the ratio of the altitude of 'Mount Everest' to the altitude of 'Dhaulagiri'? Match strings exactly
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT (CAST(everest.mountain_altitude AS FLOAT) / NULLIF(dhaulagiri.mountain_altitude, 0)) AS altitude_ratio FROM (SELECT mountain_altitude FROM mountain WHERE mountain_name = 'Mount Everest') AS everest, (SELECT mountain_altitude FROM mountain WHERE mountain_name = 'Dhaulagiri') AS dhaulagiri;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/97 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,260 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,260 - INFO - PROMPT: What is the ratio of the length of the Mississippi River to the length of the Rhine River?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT CAST((SELECT length FROM river WHERE LOWER(river_name) LIKE '%mississippi%') AS FLOAT) / NULLIF((SELECT length FROM river WHERE LOWER(river_name) LIKE '%rhine%'), 0) AS ratio ;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/98 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,302 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,303 - INFO - PROMPT: How does the population of each city vary in relation to the population of its corresponding state? Return the city name, and the proportion of each city's population relative to the state.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT city.city_name, CAST(city.population AS float) / NULLIF(state.population, 0) AS population_ratio FROM city JOIN state ON city.state_name = state.state_name ORDER BY population_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/99 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,371 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,371 - INFO - PROMPT: Get the ratio of population per area for each state
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT state_name, population / NULLIF(area, 0) AS population_density FROM state;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'error': {'message': 'The model `gpt-40-mini` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}}
+CORRECT_SOFAR: Correct so far: 0/100 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:13:44,437 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,445 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,448 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,449 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,450 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,573 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,617 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,619 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,623 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,644 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,695 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,760 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,779 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,785 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,787 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,790 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,846 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,902 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,946 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,958 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,961 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,965 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:44,996 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,095 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,101 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,117 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,118 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,143 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,256 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,268 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,293 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,313 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,365 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,370 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,380 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,380 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,407 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,508 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,550 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,568 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,577 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,578 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,617 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,638 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-22 12:13:45,675 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 404 Not Found"
