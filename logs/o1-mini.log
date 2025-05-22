@@ -1,0 +1,137 @@
+2025-05-22 12:36:01,668 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:01,784 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.name
+FROM author a
+JOIN writes w ON a.aid = w.aid
+JOIN domain_publication dp ON w.pid = dp.pid
+JOIN DOMAIN d ON dp.did = d.did
+WHERE d.name IN ('Machine Learning',
+                 'Data Science')
+GROUP BY a.aid,
+         a.name
+HAVING COUNT(DISTINCT d.name) = 2;
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 1/1 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:06,130 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:06,155 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT author.name,
+       SUM(publication.citation_num) AS total_citations
+FROM author
+JOIN writes ON author.aid = writes.aid
+JOIN publication ON writes.pid = publication.pid
+GROUP BY author.name
+ORDER BY total_citations DESC;
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 2/2 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:10,769 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:10,792 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       COUNT(*) AS total_publications
+FROM publication
+GROUP BY YEAR
+ORDER BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 3/3 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:12,744 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:12,767 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name AS domain_name,
+       AVG(p.reference_num) AS average_references
+FROM DOMAIN d
+JOIN domain_publication dp ON d.did = dp.did
+JOIN publication p ON dp.pid = p.pid
+GROUP BY d.name;
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 4/4 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:14,616 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:14,637 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       AVG(citation_num) AS average_citations
+FROM publication
+GROUP BY YEAR
+ORDER BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 5/5 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:19,030 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:19,058 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 1;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 6/6 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:21,879 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:21,900 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name,
+       COUNT(DISTINCT da.aid) AS author_count
+FROM DOMAIN d
+JOIN domain_author da ON d.did = da.did
+GROUP BY d.name
+ORDER BY author_count DESC
+LIMIT 5;
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 7/7 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:23,582 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:23,603 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY reference_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 8/8 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:26,333 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:26,353 - INFO - PROMPT: What are the top 3 publications with the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title,
+       citation_num
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT {publication.title, publication.pid}, publication.citation_num FROM publication ORDER BY publication.citation_num DESC LIMIT 3;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 9/9 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:28,208 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:36:28,228 - INFO - PROMPT: What are the titles of all publications ordered alphabetically?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY title ASC;
+GOLDEN_QUERY: SELECT DISTINCT publication.title FROM publication ORDER BY publication.title ASC NULLS LAST;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 10/10 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:36:31,060 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"

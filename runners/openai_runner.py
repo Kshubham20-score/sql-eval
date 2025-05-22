@@ -19,8 +19,8 @@ import logging
 from  datetime import datetime
 
 
-def log_interaction(prompt,response, filtered_response, golden_query, correct, exact_match, error_msg, correct_sofar):
-    log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nEXACT_MATCH: {exact_match}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
+def log_interaction(prompt,response, filtered_response, golden_query, correct, error_msg, correct_sofar):
+    log_entry = f"PROMPT: {prompt}\nRESPONSE: {response}\nFILTERED_RESPONSE: {filtered_response}\nGOLDEN_QUERY: {golden_query}\nCORRECT: {correct}\nERROR_MESSAGE: {error_msg}\nCORRECT_SOFAR: {correct_sofar}"
     log_entry += "\n" + '-' * 100
     logging.info(log_entry)  
 
@@ -111,7 +111,9 @@ def process_row(row, model_name, args):
         shuffle=args.shuffle_metadata,
     )
     try:
-        response = chat_openai(messages=messages, model=model_name, temperature=0.0, base_url="https://node4-api.staging.scorelabsai.com/v1")
+        response = chat_openai(messages=messages, model=model_name, temperature=0.1,
+	base_url="https://node4-api.staging.scorelabsai.com/v1"
+        )
         generated_query = (
             response.content.split("```sql", 1)[-1].split("```", 1)[0].strip()
         )
@@ -203,6 +205,7 @@ def run_openai_eval(args):
                 row["generated_query"] = query_gen
                 row["reason"] = reason
                 row["error_msg"] = err
+                #exact_match= correct = 0
                 # save failures into relevant columns in the dataframe
                 if "GENERATION ERROR" in err:
                     row["error_query_gen"] = 1
@@ -236,12 +239,12 @@ def run_openai_eval(args):
                     f"Accuracy: {round(total_correct/total_tried * 100, 2)}% ({total_correct}/{total_tried})"
                 )
                 log_interaction(
-                        prompt=row["prompt"],
+                        prompt=row["question"],
 			            response="",
                         filtered_response=row["generated_query"],
                         golden_query=row["query"],
                         correct= row["correct"],
-                        exact_match=int(exact_match),
+                        #exact_match=int(exact_match),
                         error_msg=row["error_msg"],
                         correct_sofar= f"Correct so far: {total_correct}/{total_tried} ({100*total_correct/total_tried:.2f}%)"
                        )

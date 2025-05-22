@@ -1,0 +1,511 @@
+2025-05-22 12:15:40,238 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:40,324 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       AVG(citation_num) AS average_citations
+FROM publication
+GROUP BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:40,920 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:40,926 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       COUNT(*) AS total_publications
+FROM publication
+GROUP BY YEAR
+ORDER BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:41,409 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:41,415 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name AS domain_name,
+       AVG(p.reference_num) AS avg_references
+FROM DOMAIN d
+JOIN domain_publication dp ON d.did = dp.did
+JOIN publication p ON dp.pid = p.pid
+GROUP BY d.name;
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:43,172 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:43,180 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY reference_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:43,498 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:43,504 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.name,
+       SUM(p.citation_num) AS total_citations
+FROM author AS a
+JOIN writes AS w ON a.aid = w.aid
+JOIN publication AS p ON w.pid = p.pid
+GROUP BY a.name;
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:44,168 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:44,173 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name,
+       COUNT(DISTINCT da.aid) AS author_count
+FROM DOMAIN d
+JOIN domain_author da ON d.did = da.did
+GROUP BY d.did,
+         d.name
+ORDER BY author_count DESC
+LIMIT 5;
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/6 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:45,118 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:45,122 - INFO - PROMPT: What are the titles of all publications ordered alphabetically?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY title ASC;
+GOLDEN_QUERY: SELECT DISTINCT publication.title FROM publication ORDER BY publication.title ASC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/7 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:45,475 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:45,479 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 1;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/8 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:46,362 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:46,367 - INFO - PROMPT: What are the top 3 publications with the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT pid,
+       title,
+       citation_num
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT {publication.title, publication.pid}, publication.citation_num FROM publication ORDER BY publication.citation_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/9 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:48,071 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:48,078 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.aid,
+       a.name
+FROM author a
+JOIN writes w ON a.aid = w.aid
+JOIN domain_publication dp ON w.pid = dp.pid
+JOIN DOMAIN d ON dp.did = d.did
+WHERE d.name IN ('Machine Learning',
+                 'Data Science')
+GROUP BY a.aid,
+         a.name
+HAVING COUNT(DISTINCT d.name) = 2;
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/10 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:48,522 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:48,528 - INFO - PROMPT: What is the ratio of publications to authors in the database?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT
+  (SELECT COUNT(*)
+   FROM publication)::float / NULLIF(
+                                       (SELECT COUNT(*)
+                                        FROM author), 0) AS publication_to_author_ratio;
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT author.aid), 0) AS publication_to_author_ratio FROM publication, author;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/11 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:50,494 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:50,495 - INFO - PROMPT: What is the ratio of the total number of publications to the total number of keywords within each domain ID? Show all domain IDs.
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_publication LEFT JOIN domain_keyword ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT domain_publication.did, CAST(COUNT(DISTINCT domain_publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT domain_keyword.kid), 0) AS publication_to_keyword_ratio FROM domain_keyword LEFT JOIN domain_publication ON domain_publication.did = domain_keyword.did GROUP BY domain_publication.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;SELECT d.did, COALESCE(CAST(COUNT(DISTINCT dp.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT dk.kid), 0), 0) AS publication_to_keyword_ratio FROM domain d LEFT JOIN domain_publication dp ON d.did = dp.did LEFT JOIN domain_keyword dk ON d.did = dk.did GROUP BY d.did ORDER BY publication_to_keyword_ratio DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/12 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:51,446 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:51,452 - INFO - PROMPT: What is the ratio of publications presented in conferences to publications published in journals?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT 1.0 *
+  (SELECT COUNT(*)
+   FROM publication
+   WHERE cid IS NOT NULL) / NULLIF(
+                                     (SELECT COUNT(*)
+                                      FROM publication
+                                      WHERE jid IS NOT NULL), 0) AS ratio;
+GOLDEN_QUERY: SELECT CAST(COUNT(DISTINCT CASE WHEN cid IS NOT NULL THEN pid END) AS FLOAT) / NULLIF(COUNT(DISTINCT CASE WHEN jid IS NOT NULL THEN pid END), 0) AS ratio FROM publication;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/13 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:51,893 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:51,899 - INFO - PROMPT: Which author had the most publications in the year 2021 and how many publications did he/she have that year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.name,
+       COUNT(*) AS publication_count
+FROM author a
+JOIN writes w ON a.aid = w.aid
+JOIN publication p ON w.pid = p.pid
+WHERE p.year = 2021
+GROUP BY a.name
+ORDER BY publication_count DESC
+LIMIT 1;
+GOLDEN_QUERY: SELECT {author.name, author.aid}, COUNT(publication.pid) AS publication_count FROM writes JOIN author ON writes.aid = author.aid JOIN publication ON writes.pid = publication.pid WHERE publication.year = 2021 GROUP BY {} ORDER BY publication_count DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/14 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:51,949 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:51,955 - INFO - PROMPT: How does the ratio of publications to journals change over the years? Return the annual numbers of publications and journals as well.
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       COUNT(*) AS publications,
+       COUNT(DISTINCT jid) AS journals,
+       COUNT(*)::DECIMAL / NULLIF(COUNT(DISTINCT jid), 0) AS publication_to_journal_ratio
+FROM publication
+GROUP BY YEAR
+ORDER BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS num_publications, COUNT(DISTINCT publication.jid) AS num_journals, CAST(COUNT(DISTINCT publication.pid) AS FLOAT) / NULLIF(COUNT(DISTINCT publication.jid), 0) AS ratio FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/15 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:54,982 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:55,005 - INFO - PROMPT: How many publications were published in journals whose names start with the letter "J"?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT COUNT(*)
+FROM publication
+JOIN journal ON publication.jid = journal.jid
+WHERE journal.name LIKE 'J%';
+GOLDEN_QUERY: SELECT count(DISTINCT publication.pid) FROM publication JOIN journal ON publication.jid = journal.jid WHERE journal.name ilike 'J%';
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/16 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:55,051 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:55,052 - INFO - PROMPT: How does the ratio of authors to organizations differ by continent?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT organization.continent, COUNT(DISTINCT author.aid)::float / NULLIF(COUNT(DISTINCT organization.oid), 0) AS ratio FROM organization LEFT JOIN author ON author.oid = organization.oid GROUP BY organization.continent ORDER BY ratio DESC NULLS LAST;WITH author_counts AS (SELECT o.continent, COUNT(DISTINCT a.aid) AS author_count FROM author AS a JOIN organization AS o ON a.oid = o.oid GROUP BY o.continent), organization_counts AS (SELECT o.continent, COUNT(DISTINCT o.oid) AS organization_count FROM organization AS o GROUP BY o.continent) SELECT ac.continent, CAST(ac.author_count AS FLOAT) / NULLIF(oc.organization_count, 0) AS author_to_organization_ratio FROM author_counts AS ac JOIN organization_counts AS oc ON ac.continent = oc.continent ORDER BY author_to_organization_ratio DESC;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/17 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:56,679 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:56,684 - INFO - PROMPT: What is the total number of publications presented in each conference?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT c.name,
+       COUNT(p.pid) AS total_publications
+FROM conference c
+JOIN publication p ON c.cid = p.cid
+GROUP BY c.cid,
+         c.name;
+GOLDEN_QUERY: SELECT {conference.name, conference.cid}, COUNT(publication.pid) AS total_publications FROM publication JOIN conference ON publication.cid = conference.cid GROUP BY {} ORDER BY total_publications DESC;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/18 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:57,065 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:57,071 - INFO - PROMPT: How many publications were presented at each conference, ordered by the number of publications in descending order? Give the names of the conferences and their corresponding number of publications.
+RESPONSE: 
+FILTERED_RESPONSE: SELECT c.name AS conference_name,
+       COUNT(p.pid) AS num_publications
+FROM conference c
+JOIN publication p ON c.cid = p.cid
+GROUP BY c.name
+ORDER BY num_publications DESC;
+GOLDEN_QUERY: SELECT conference.name, COUNT(publication.pid) AS num_publications FROM publication JOIN conference ON publication.cid=conference.cid GROUP BY conference.name, conference.cid ORDER BY num_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/19 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:15:57,647 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:15:57,652 - INFO - PROMPT: What is the total number of publications in each journal, ordered by the number of publications in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT j.name,
+       COUNT(p.pid) AS total_publications
+FROM publication p
+JOIN journal j ON p.jid = j.jid
+GROUP BY j.name
+ORDER BY total_publications DESC;
+GOLDEN_QUERY: SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM publication JOIN journal ON publication.jid=journal.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;SELECT {journal.name, journal.jid}, COUNT(publication.pid) AS total_publications FROM journal LEFT JOIN publication ON journal.jid=publication.jid GROUP BY {} ORDER BY total_publications DESC NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: EXECUTION ERROR: (psycopg2.OperationalError) connection to server at "localhost" (::1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+CORRECT_SOFAR: Correct so far: 0/20 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:16:00,313 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:16:00,314 - INFO - PROMPT: Which authors belong to the same domain as Martin?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT DISTINCT {a2.name, a2.aid} FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%';SELECT DISTINCT a2.name, a2.aid FROM author a1 JOIN domain_author da1 ON a1.aid = da1.aid JOIN domain_author da2 ON da1.did = da2.did JOIN author a2 ON da2.aid = a2.aid WHERE LOWER(a1.name) ILIKE '%martin%' AND a2.name NOT ILIKE '%martin%';
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/21 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:16:01,587 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:16:02,122 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:16:02,890 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:16:02,972 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:24,243 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:24,350 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       AVG(citation_num) AS average_citations
+FROM publication
+GROUP BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 1/1 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:25,735 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:25,758 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name AS domain_name,
+       AVG(p.reference_num) AS avg_references
+FROM DOMAIN d
+JOIN domain_publication dp ON d.did = dp.did
+JOIN publication p ON dp.pid = p.pid
+GROUP BY d.name;
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 2/2 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:26,418 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:26,440 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT YEAR,
+       COUNT(*) AS total_publications
+FROM publication
+GROUP BY YEAR
+ORDER BY YEAR;
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 3/3 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:26,816 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:26,842 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.name,
+       SUM(p.citation_num) AS total_citations
+FROM author AS a
+JOIN writes AS w ON a.aid = w.aid
+JOIN publication AS p ON w.pid = p.pid
+GROUP BY a.name;
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 4/4 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:26,952 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:26,975 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT a.name
+FROM author a
+JOIN writes w ON a.aid = w.aid
+JOIN domain_publication dp ON w.pid = dp.pid
+JOIN DOMAIN d ON dp.did = d.did
+WHERE d.name IN ('Machine Learning',
+                 'Data Science')
+GROUP BY a.aid,
+         a.name
+HAVING COUNT(DISTINCT d.name) = 2;
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 5/5 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:28,070 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:28,092 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT d.name AS domain_name,
+       COUNT(DISTINCT da.aid) AS author_count
+FROM DOMAIN d
+JOIN domain_author da ON d.did = da.did
+GROUP BY d.did,
+         d.name
+ORDER BY author_count DESC
+LIMIT 5;
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 6/6 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:28,479 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:28,500 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 1;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 7/7 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:28,743 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:28,763 - INFO - PROMPT: What are the titles of all publications ordered alphabetically?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY title ASC;
+GOLDEN_QUERY: SELECT DISTINCT publication.title FROM publication ORDER BY publication.title ASC NULLS LAST;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 8/8 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:29,384 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:29,404 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title
+FROM publication
+ORDER BY reference_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 9/9 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:30,490 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:30,511 - INFO - PROMPT: What are the top 3 publications with the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: SELECT title,
+       citation_num
+FROM publication
+ORDER BY citation_num DESC
+LIMIT 3;
+GOLDEN_QUERY: SELECT {publication.title, publication.pid}, publication.citation_num FROM publication ORDER BY publication.citation_num DESC LIMIT 3;
+CORRECT: 1
+ERROR_MESSAGE: 
+CORRECT_SOFAR: Correct so far: 10/10 (100.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-22 12:37:31,088 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:32,583 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:33,103 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-22 12:37:34,137 - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
