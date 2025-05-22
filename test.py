@@ -43,4 +43,4 @@ try:
 except:
     pass
 
-print("generated query:"generated_query)
+print("generated query:",generated_query)
