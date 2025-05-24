@@ -1,0 +1,233 @@
+2025-05-23 14:18:22,654 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-23 14:18:22,659 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:18:27,687 - INFO - Retrying request to /chat/completions in 0.423076 seconds
+2025-05-23 14:18:33,118 - INFO - Retrying request to /chat/completions in 0.776157 seconds
+2025-05-23 14:18:38,902 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:18:43,925 - INFO - Retrying request to /chat/completions in 0.463686 seconds
+2025-05-23 14:18:49,396 - INFO - Retrying request to /chat/completions in 0.893763 seconds
+2025-05-23 14:18:55,298 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:19:00,320 - INFO - Retrying request to /chat/completions in 0.406616 seconds
+2025-05-23 14:19:05,734 - INFO - Retrying request to /chat/completions in 0.872065 seconds
+2025-05-23 14:19:11,613 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:19:16,636 - INFO - Retrying request to /chat/completions in 0.433288 seconds
+2025-05-23 14:19:22,081 - INFO - Retrying request to /chat/completions in 0.840217 seconds
+2025-05-23 14:19:27,930 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:19:32,952 - INFO - Retrying request to /chat/completions in 0.381697 seconds
+2025-05-23 14:24:39,060 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-23 14:24:39,065 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:24:44,088 - INFO - Retrying request to /chat/completions in 0.378006 seconds
+2025-05-23 14:24:49,473 - INFO - Retrying request to /chat/completions in 0.771002 seconds
+2025-05-23 14:24:55,251 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:25:00,274 - INFO - Retrying request to /chat/completions in 0.400086 seconds
+2025-05-23 14:25:05,681 - INFO - Retrying request to /chat/completions in 0.858918 seconds
+2025-05-23 14:25:11,548 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:25:16,570 - INFO - Retrying request to /chat/completions in 0.489338 seconds
+2025-05-23 14:25:22,066 - INFO - Retrying request to /chat/completions in 0.780902 seconds
+2025-05-23 14:25:27,855 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:25:32,877 - INFO - Retrying request to /chat/completions in 0.482244 seconds
+2025-05-23 14:25:38,366 - INFO - Retrying request to /chat/completions in 0.958953 seconds
+2025-05-23 14:27:37,569 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2025-05-23 14:27:37,571 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 400 - {'object': 'error', 'message': "This model's maximum context length is 4096 tokens. However, you requested 5023 tokens (927 in the messages, 4096 in the completion). Please reduce the length of the messages or completion.", 'type': 'BadRequestError', 'param': None, 'code': 400}
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:27:42,594 - INFO - Retrying request to /chat/completions in 0.427035 seconds
+2025-05-23 14:27:48,028 - INFO - Retrying request to /chat/completions in 0.801456 seconds
+2025-05-23 14:27:53,837 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:27:58,860 - INFO - Retrying request to /chat/completions in 0.449965 seconds
+2025-05-23 14:28:04,317 - INFO - Retrying request to /chat/completions in 0.756001 seconds
+2025-05-23 14:28:10,082 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:28:15,104 - INFO - Retrying request to /chat/completions in 0.426634 seconds
+2025-05-23 14:28:20,537 - INFO - Retrying request to /chat/completions in 0.904590 seconds
+2025-05-23 14:28:26,449 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:28:31,472 - INFO - Retrying request to /chat/completions in 0.499195 seconds
+2025-05-23 14:28:36,978 - INFO - Retrying request to /chat/completions in 0.869621 seconds
+2025-05-23 14:28:42,855 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:28:47,879 - INFO - Retrying request to /chat/completions in 0.465064 seconds
+2025-05-23 14:28:53,351 - INFO - Retrying request to /chat/completions in 0.880424 seconds
+2025-05-23 14:28:59,239 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/6 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:29:04,261 - INFO - Retrying request to /chat/completions in 0.445083 seconds
+2025-05-23 14:29:09,713 - INFO - Retrying request to /chat/completions in 0.937177 seconds
+2025-05-23 14:35:07,828 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-23 14:35:07,833 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:35:12,856 - INFO - Retrying request to /chat/completions in 0.463893 seconds
+2025-05-23 14:35:18,327 - INFO - Retrying request to /chat/completions in 0.965766 seconds
+2025-05-23 14:35:24,300 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:35:29,323 - INFO - Retrying request to /chat/completions in 0.391847 seconds
+2025-05-23 14:35:34,722 - INFO - Retrying request to /chat/completions in 0.848861 seconds
+2025-05-23 14:35:40,579 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:35:45,601 - INFO - Retrying request to /chat/completions in 0.453841 seconds
+2025-05-23 14:35:51,062 - INFO - Retrying request to /chat/completions in 0.958301 seconds
+2025-05-23 14:35:57,028 - INFO - PROMPT: What is the average number of references cited by publications in each domain name?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {domain.name,domain.did}, AVG(publication.reference_num) AS average_references FROM domain_publication JOIN publication ON domain_publication.pid = publication.pid JOIN domain ON domain.did = domain_publication.did GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/4 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:36:02,050 - INFO - Retrying request to /chat/completions in 0.433494 seconds
+2025-05-23 14:36:07,491 - INFO - Retrying request to /chat/completions in 0.930828 seconds
+2025-05-23 14:36:13,435 - INFO - PROMPT: What is the average number of citations received by publications in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, AVG(publication.citation_num) AS average_citations FROM publication GROUP BY publication.year ORDER BY publication.year NULLS LAST;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/5 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:36:18,457 - INFO - Retrying request to /chat/completions in 0.409980 seconds
+2025-05-23 14:36:23,874 - INFO - Retrying request to /chat/completions in 0.810882 seconds
+2025-05-23 14:39:34,325 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 200 OK"
+2025-05-23 14:39:34,326 - INFO - PROMPT: What is the title of the publication that has received the highest number of citations?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.citation_num DESC NULLS LAST LIMIT 1;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Max tokens reached
+CORRECT_SOFAR: Correct so far: 0/6 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:39:39,533 - INFO - Retrying request to /chat/completions in 0.484204 seconds
+2025-05-23 14:39:45,024 - INFO - Retrying request to /chat/completions in 0.802546 seconds
+2025-05-23 14:39:50,834 - INFO - PROMPT: What are the top 5 domains with the highest number of authors associated with them?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {d.name, d.did}, COUNT(DISTINCT a.aid) AS author_count FROM author a JOIN domain_author da ON a.aid = da.aid JOIN domain d ON da.did = d.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;SELECT {d.name, d.did}, COUNT(da.aid) AS author_count FROM DOMAIN AS d JOIN domain_author AS da ON d.did = da.did GROUP BY {} ORDER BY author_count DESC LIMIT 5;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/7 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:39:55,857 - INFO - Retrying request to /chat/completions in 0.451533 seconds
+2025-05-23 14:40:01,316 - INFO - Retrying request to /chat/completions in 0.841383 seconds
+2025-05-23 14:40:07,216 - INFO - PROMPT: What are the top 3 titles of the publications that have the highest number of references cited, ordered by the number of references cited in descending order?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.title FROM publication ORDER BY publication.reference_num DESC LIMIT 3;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/8 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-23 14:40:12,238 - INFO - Retrying request to /chat/completions in 0.488863 seconds

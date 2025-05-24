@@ -110,9 +110,10 @@ def process_row(row, model_name, args):
         public_data=not args.use_private_data,
         shuffle=args.shuffle_metadata,
     )
+    print(messages)
     try:
         response = chat_openai(messages=messages, model=model_name, temperature=0.1,
-	base_url="https://node4-api.staging.scorelabsai.com/v1"
+	base_url="https://node4-api.staging.greenjello.io/v1"
         )
         generated_query = (
             response.content.split("```sql", 1)[-1].split("```", 1)[0].strip()
