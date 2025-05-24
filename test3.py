@@ -89,15 +89,16 @@ messages = [{'role': 'system', 'content': 'Your role is to convert a user questi
 
 
 # Run 10 sequential requests
-for i in range(10):
-    print(f"\n=== Request {i+1} ===")
+#for i in range(10):
+def make_request(i):
+    print(f"\n=== Request {i+1} started  ===")
     try:
         response = chat_openai(
             messages=messages,
             model="Qwen/Qwen2.5-Coder-14B",
             temperature=0.1,
             base_url="https://node4-api.staging.greenjello.io/v1",  # <-- replace with your actual base URL
-w        )
+        )
 
         content = response.content
         print("[RAW OUTPUT]:", content)
@@ -117,3 +118,11 @@ w        )
         print("[FORMATTED SQL]:", generated_query)
     except Exception as e:
         print(f"[ERROR]: {e}")
+
+total_requests =10
+max_parallel = 4
+
+with  ThreadPoolExecutor(max_workers=max_parallel) as executor:
+    futures = [executor.submit(make_request,i) for i in range(total_requests)]
+    for future in as_completed(futures):
+        print("\n" + future.result())
