@@ -5,7 +5,7 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Any
 
-client_openai = OpenAI(base_url="https://node4-api.staging.scorelabsai.com/v1", api_key="EMPTY")
+client_openai = OpenAI(base_url="https://node4-api.staging.greenjello.io/v1", api_key="EMPTY")
 
 messages= [
   {
@@ -21,7 +21,7 @@ messages= [
 
 response = client_openai.chat.completions.create(
                 messages=messages,
-                model="defog/llama-3-sqlcoder-8b",
+                model="Qwen/Qwen2.5-Coder-14B",
                 max_completion_tokens=100,
                 temperature=0.1,
                 stop=[],
@@ -145,7 +145,7 @@ def chat_openai(
     print(content)
     if response.choices[0].finish_reason == "length":
         print("Max tokens reached")
-        raise Exception("Max tokens reached")
+        #raise Exception("Max tokens reached")
     if len(response.choices) == 0:
         print("Empty response")
         raise Exception("No response")
@@ -159,7 +159,7 @@ def chat_openai(
     )
 
 
-response = chat_openai(messages=messages, model="defog/llama-3-sqlcoder-8b", temperature=0.1, base_url="https://node4-api.staging.scorelabsai.com/v1")
+response = chat_openai(messages=messages, model="Qwen/Qwen2.5-Coder-14B", temperature=0.1, base_url="https://node4-api.staging.greenjello.io/v1")
 generated_query = (
     response.content.split("```sql", 1)[-1].split("```", 1)[0].strip()
 )

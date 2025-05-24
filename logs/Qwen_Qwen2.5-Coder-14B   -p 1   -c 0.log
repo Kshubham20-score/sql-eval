@@ -1,0 +1,33 @@
+2025-05-24 08:40:13,367 - INFO - HTTP Request: POST https://node4-api.staging.greenjello.io/v1/chat/completions "HTTP/1.1 404 Not Found"
+2025-05-24 08:40:13,369 - INFO - PROMPT: What is the total number of citations received by each author?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name, author.aid}, sum(publication.citation_num) AS total_citations FROM author JOIN writes ON author.aid = writes.aid JOIN publication ON writes.pid = publication.pid GROUP BY {} ORDER BY total_citations DESC NULLS LAST;SELECT {a.aid, a.name}, COUNT(c.cited) AS total_citations FROM author a JOIN writes w ON a.aid = w.aid JOIN publication p ON w.pid = p.pid JOIN cite c ON p.pid = c.cited GROUP BY {} ORDER BY total_citations DESC;SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};SELECT {a.aid, a.name}, COALESCE(SUM(p.citation_num), 0) AS total_citations FROM author a LEFT JOIN writes w ON a.aid = w.aid LEFT JOIN publication p ON w.pid = p.pid GROUP BY {};
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Error code: 404 - {'object': 'error', 'message': 'The model `Qwen/Qwen2.5-Coder-14B\xa0\xa0\xa0-p\xa01\xa0\xa0\xa0-c\xa00` does not exist.', 'type': 'NotFoundError', 'param': None, 'code': 404}
+CORRECT_SOFAR: Correct so far: 0/1 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-24 08:40:18,344 - INFO - Retrying request to /chat/completions in 0.485551 seconds
+2025-05-24 08:40:18,391 - INFO - Retrying request to /chat/completions in 0.436086 seconds
+2025-05-24 08:40:23,834 - INFO - Retrying request to /chat/completions in 0.853417 seconds
+2025-05-24 08:40:23,836 - INFO - Retrying request to /chat/completions in 0.876373 seconds
+2025-05-24 08:40:29,695 - INFO - PROMPT: What is the total number of publications published in each year?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT publication.year, COUNT(DISTINCT publication.pid) AS total_publications FROM publication GROUP BY publication.year ORDER BY publication.year;
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/2 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-24 08:40:29,720 - INFO - PROMPT: Which authors have written publications in both the domain "Machine Learning" and the domain "Data Science"?
+RESPONSE: 
+FILTERED_RESPONSE: 
+GOLDEN_QUERY: SELECT {author.name,author.aid} FROM author WHERE author.aid IN (SELECT domain_author.aid FROM domain_author WHERE domain_author.did IN (SELECT domain.did FROM DOMAIN WHERE domain.name IN ('Machine Learning', 'Data Science') ) GROUP BY 1 HAVING COUNT(DISTINCT domain_author.did) = 2);
+CORRECT: 0
+ERROR_MESSAGE: GENERATION ERROR: Request timed out.
+CORRECT_SOFAR: Correct so far: 0/3 (0.00%)
+----------------------------------------------------------------------------------------------------
+2025-05-24 08:40:34,718 - INFO - Retrying request to /chat/completions in 0.425218 seconds
+2025-05-24 08:40:34,742 - INFO - Retrying request to /chat/completions in 0.461949 seconds
+2025-05-24 08:40:40,150 - INFO - Retrying request to /chat/completions in 0.774072 seconds
+2025-05-24 08:40:40,211 - INFO - Retrying request to /chat/completions in 0.806723 seconds

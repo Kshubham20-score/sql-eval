@@ -120,7 +120,7 @@ def chat_openai(
     messages: List[Dict[str, str]],
     model: str = "gpt-4o",
     #max_completion_tokens: int = 16384,
-    max_completion_tokens: int = 600,
+    max_completion_tokens: int = 2048, 
     temperature: float = 0.0,
     stop: List[str] = [],
     json_mode: bool = False,

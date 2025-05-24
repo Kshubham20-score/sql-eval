@@ -86,6 +86,14 @@ if __name__ == "__main__":
         if args.model is None:
             args.model = "gpt-4o"
         run_openai_eval(args)
+
+    elif args.model_type == "score":
+        from  runners.score_runner import run_score_eval
+
+        if args.model is None:
+            args.model = "Qwen/Qwen2.5-Coder-14B"
+        run_score_eval(args)
+
     elif args.model_type == "anthropic":
         from runners.anthropic_runner import run_anthropic_eval
 
