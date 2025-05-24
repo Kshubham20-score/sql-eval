@@ -97,7 +97,7 @@ for i in range(10):
             model="Qwen/Qwen2.5-Coder-14B",
             temperature=0.1,
             base_url="https://node4-api.staging.greenjello.io/v1",  # <-- replace with your actual base URL
-w        )
+        )
 
         content = response.content
         print("[RAW OUTPUT]:", content)
