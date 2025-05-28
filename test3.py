@@ -124,5 +124,9 @@ max_parallel = 4
 
 with  ThreadPoolExecutor(max_workers=max_parallel) as executor:
     futures = [executor.submit(make_request,i) for i in range(total_requests)]
-    for future in as_completed(futures):
-        print("\n" + future.result())
+    for future in as_completed(futures, timeout=300):
+        result = future.result(timeout=90)
+        if result is not None:
+            print("\n" + result)
+        else:
+            print("\n[ERROR] Future returned None.")
