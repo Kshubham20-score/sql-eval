@@ -43,7 +43,7 @@ def chat_openai(
     seed: int = 0,
     store=True,
     metadata=None,
-    timeout=100,
+    timeout=300,
     base_url: str = None,
 ) -> LLMResponse:
     from openai import OpenAI
@@ -91,38 +91,53 @@ messages = [{'role': 'system', 'content': 'Your role is to convert a user questi
 # Run 10 sequential requests
 #for i in range(10):
 def make_request(i):
-    print(f"\n=== Request {i+1} started  ===")
-    try:
-        response = chat_openai(
-            messages=messages,
-            model="Qwen/Qwen2.5-Coder-14B",
-            temperature=0.1,
-            base_url="https://node4-api.staging.greenjello.io/v1",  # <-- replace with your actual base URL
-        )
-
-        content = response.content
-        print("[RAW OUTPUT]:", content)
-
-        # Try to extract SQL from markdown-style block
+    max_retries = 3
+    base_delay = 2
+    for attempt in range(max_retries):
+        print(f"\n=== Request {i+1} started  ===")
         try:
-            generated_query = content.split("```sql", 1)[-1].split("```", 1)[0].strip()
-        except IndexError:
-            generated_query = content.strip()
+            response = chat_openai(
+                messages=messages,
+                model="Qwen/Qwen2.5-Coder-14B",
+                temperature=0.1,
+                base_url="https://node4-api.staging.greenjello.io/v1",  # <-- replace with your actual base URL
+            )
 
-        # Format SQL
-        try:
-            generated_query = sqlparse.format(generated_query, reindent=True, keyword_case="upper")
-        except Exception:
-            pass
+            content = response.content 
+            print("[RAW OUTPUT]:", content)
+            # Try to extract SQL from markdown-style block
+            try:
+                generated_query = content.split("```sql", 1)[-1].split("```", 1)[0].strip()
+            except IndexError:
+                generated_query = content.strip()
 
-        print("[FORMATTED SQL]:", generated_query)
-    except Exception as e:
-        print(f"[ERROR]: {e}")
+            # Format SQL
+            try:
+                generated_query = sqlparse.format(generated_query, reindent=True, keyword_case="upper")
+            except Exception:
+                pass
+
+            print("[FORMATTED SQL]:", generated_query)
+        except Exception as e:
+            #print(f"[ERROR]: {e}")
+            print(f"Request {i+1} failed on attempt {attempt+1}: {e}")
+            if attempt < max_retries - 1:
+                delay = base_delay * (2 ** attempt) + random.uniform(0, 1)  # jitter helps
+                print(f"Retrying in {delay:.2f} seconds...")
+                time.sleep(delay)
+            else:
+                return f"Request {i+1} FAILED after {max_retries} attempts: {e}"
 
 total_requests =10
 max_parallel = 4
 
 with  ThreadPoolExecutor(max_workers=max_parallel) as executor:
     futures = [executor.submit(make_request,i) for i in range(total_requests)]
+    #for future in as_completed(futures):
+        #print("\n" + future.result())
     for future in as_completed(futures):
-        print("\n" + future.result())
+        result = future.result()
+        if result is not None:
+            print("\n" + result)
+        else:
+            print("\n[ERROR] Future returned None.")
